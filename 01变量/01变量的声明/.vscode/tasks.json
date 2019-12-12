@@ -1,0 +1,22 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "complie",
+            "type": "shell",
+            "command": "cmd",
+            "args": [
+                "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Visual Studio 2019\\Visual Studio Tools\\VC\\x64 Native Tools Command Prompt for VS 2019 Preview.bat",
+                "/c",
+                "cl",
+                "${workspaceFolder}\\Program.cpp"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
