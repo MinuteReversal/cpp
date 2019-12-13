@@ -1,16 +1,20 @@
 #include <iostream>
+#include <string>
 
 using namespace std;
 
-int main(int argc, char *argv)
+int main(int argc, char *argv[], char *envp[])
 {
-    char str1[] = {'h', 'e', 'l', 'l', 'o'};
-    char str2[] = "world";
-    char *str3 = strcat(str1, str2);
-    char *str4 = "just do it";
+    const string s = "hello world";
+    cout << s.length() << endl;
+    cout << s << endl;
+    string s2 = s + "666";
+    cout << s2 << endl;
+    cout << (s == "hello world") << endl;
 
-    cout << str3 << endl;
-    cout << str4 << endl;
-    cout << "sizeof:" << sizeof(str1) << endl;
+    string s3;
+    cin >> s3;
+    cout << s3 << endl;
+
     return 0;
 }
