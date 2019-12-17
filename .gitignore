@@ -32,3 +32,7 @@
 *.app
 *.pdb
 *.ilk
+
+./wasm/*.js
+./wasm/*.html
+./wasm/*.exe
