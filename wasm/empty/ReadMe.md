@@ -32,3 +32,9 @@ output html
 ```
 em++ Program.cpp -s WASM=1 -o index.html
 ```
+
+MIME type
+```
+application/wasm
+```
+[https://webassembly.org/docs/web/](https://webassembly.org/docs/web/)
