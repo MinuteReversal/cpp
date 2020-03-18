@@ -8,5 +8,5 @@ int main(int argc, char **argv)
     {
         cout << *(argv + i) << endl;
     }
-    return EXIT_SUCCESS;
+    return 0;
 }
