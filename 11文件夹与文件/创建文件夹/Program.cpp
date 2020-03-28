@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     char *folderName = "AAA";
     if (access(folderName, 6) == -1)

@@ -20,7 +20,7 @@ class C : public B
 {
 };
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
   A *a = new C();
   a->X = 10;

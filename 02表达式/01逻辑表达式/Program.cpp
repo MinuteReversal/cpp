@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int main(int argc, char *argv)
+int main(int argc, char *argv[])
 {
     auto n1 = !true;
     auto n2 = !false;

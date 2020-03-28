@@ -16,7 +16,7 @@ class A
 };
 char *A::Name = "AAA";
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     A *a1 = new A();
     a1->Print();

@@ -13,7 +13,7 @@ class A
 };
 char *A::Name = "A";
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     A::Print();
     return 0;

@@ -11,7 +11,7 @@ string entryPort(string message)
     return "word";
 }
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     auto f = async(entryPort, "hello");
     f.wait();

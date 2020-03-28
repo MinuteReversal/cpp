@@ -11,7 +11,7 @@ class Cat
     }
 };
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     void (Cat::*pCat)();
     pCat = &Cat::Walk;

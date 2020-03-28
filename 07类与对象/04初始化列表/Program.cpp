@@ -18,7 +18,7 @@ class Point
     }
 };
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     Point *point = new Point(10, 20);
     point->Print();

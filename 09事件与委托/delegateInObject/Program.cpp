@@ -20,7 +20,7 @@ class B
     }
 };
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     A a;
     B b;

@@ -28,7 +28,7 @@ class AB : public A, public B
     B::Name;
 };
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     AB *ab = new AB();
     cout << ab->Name << endl;

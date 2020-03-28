@@ -8,7 +8,7 @@ struct Point
     int Y;
 };
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     Point p = {100, 200};
     Point p2 = Point(p); //copy constructor

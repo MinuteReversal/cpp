@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     const auto mylist = new list<string>();
     for (auto i = 0; i < 10; i++)

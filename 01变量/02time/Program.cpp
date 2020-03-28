@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int main(int argc, char *argv)
+int main(int argc, char *argv[])
 {
     auto now = chrono::system_clock::to_time_t(chrono::system_clock::now());
     cout << ctime(&now) << endl;

@@ -22,7 +22,7 @@ int Fn4(int i)
     return i;
 }
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     void (*DFn1)() = Fn1;
     void (*DFn2)(int) = Fn2;

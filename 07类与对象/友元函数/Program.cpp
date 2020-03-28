@@ -20,7 +20,7 @@ void Print(A o)
     cout << "o name is " << o.Name << endl;
 }
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     A *a = new A();
     Print(*a);

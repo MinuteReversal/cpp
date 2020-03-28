@@ -37,7 +37,7 @@ class Car
     }
 };
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     //reference type
     Car *car = new Car("BMW");

@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     char a = 97;
     char A = 0x61;

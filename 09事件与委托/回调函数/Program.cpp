@@ -12,7 +12,7 @@ void Fn1()
     cout << "Hello Call Back" << endl;
 }
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     CallBack(Fn1);
     return 0;

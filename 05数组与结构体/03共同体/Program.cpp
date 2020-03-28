@@ -8,7 +8,7 @@ union AAA {
     double db;
 };
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     AAA aaa;
     aaa.ch = 'A';

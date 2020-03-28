@@ -15,7 +15,7 @@ class Box
     }
 };
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     Box *a = new Box(10, 20);
     Box *b = new Box(30, 40);

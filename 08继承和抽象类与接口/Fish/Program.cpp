@@ -35,7 +35,7 @@ class WhiteShark : public Shark
 {
 };
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     Fish *fish = new Fish();
     fish->Eat();

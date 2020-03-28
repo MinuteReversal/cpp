@@ -7,7 +7,7 @@ void Fn2(int i);
 int Fn3();
 int Fn4(int i);
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     Fn1();
     Fn2(2);

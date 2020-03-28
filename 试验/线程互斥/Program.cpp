@@ -36,7 +36,7 @@ void go()
     cout << n++ << endl;
 }
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
 
     while (true)

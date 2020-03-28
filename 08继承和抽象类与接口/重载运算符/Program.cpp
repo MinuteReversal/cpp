@@ -14,7 +14,7 @@ class Box
     }
 };
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     Box a(10, 20);
     Box b(30, 40);

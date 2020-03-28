@@ -19,7 +19,7 @@ void fn2()
     }
 }
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     thread p1(fn1);
     thread p2(fn2);

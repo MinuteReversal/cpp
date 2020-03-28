@@ -34,7 +34,7 @@ class D : public B, public C
 {
 };
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     D d1;
     d1.f();

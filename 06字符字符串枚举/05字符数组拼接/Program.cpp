@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     char str1[] = {'h', 'e', 'l', 'l', 'o'};
     char str2[] = "world";

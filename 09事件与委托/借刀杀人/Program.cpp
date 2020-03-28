@@ -39,7 +39,7 @@ class Zhugeliang
     void (MaChao::*BorrowNife)(IObject *) = NULL;
 };
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
     CaoCao caocao;
     Zhugeliang zhugeliang;
