@@ -1,4 +1,4 @@
 # cpp
 cpp program
 
-#docs
+[google C++ Style Guide](https://google.github.io/styleguide/cppguide.html)
