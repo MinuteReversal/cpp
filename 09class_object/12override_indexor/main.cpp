@@ -15,12 +15,9 @@ public:
 
     if (index < 0 || index >= MAX)
     {
-
       cout << "\n Array index out of bound\n";
-
       exit(1);
     }
-
     return arr[index];
   }
 };
