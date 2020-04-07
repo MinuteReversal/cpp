@@ -2,6 +2,22 @@
     "editor.tabSize": 2,
     "files.associations": {
         "thread": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "*.tcc": "cpp",
+        "istream": "cpp",
+        "new": "cpp",
+        "sstream": "cpp",
+        "streambuf": "cpp",
+        "array": "cpp",
+        "functional": "cpp",
+        "random": "cpp",
+        "type_traits": "cpp",
+        "algorithm": "cpp",
+        "memory": "cpp",
+        "unordered_map": "cpp",
+        "map": "cpp",
+        "memory_resource": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp"
     }
 }
