@@ -36,5 +36,14 @@ int main(int argc, char const **argv)
   int (*f4)(int) = fn4;
   cout << "fn" << (*f4)(4) << endl;
 
+  auto const m1 = fn1;
+  auto const m2 = fn2;
+  auto const m3 = fn3;
+  auto const m4 = fn4;
+
+  m1();
+  m2(2);
+  cout << "fn" << m3() << endl;
+  cout << "fn" << m4(4) << endl;
   return 0;
 }
