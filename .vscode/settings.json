@@ -18,6 +18,7 @@
         "map": "cpp",
         "memory_resource": "cpp",
         "tuple": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "cstddef": "cpp"
     }
 }
