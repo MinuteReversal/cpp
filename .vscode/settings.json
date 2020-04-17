@@ -19,6 +19,9 @@
         "memory_resource": "cpp",
         "tuple": "cpp",
         "utility": "cpp",
-        "cstddef": "cpp"
+        "cstddef": "cpp",
+        "limits": "cpp",
+        "future": "cpp",
+        "cmath": "cpp"
     }
 }
