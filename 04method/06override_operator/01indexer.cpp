@@ -8,8 +8,10 @@ private:
   int value = 0;
 
 public:
-  int operator[](int i) const { return value; } //获取元素（读取）
-  int &operator[](int i) { return value; }      //获取元素（写入）
+  int &operator[](int i)
+  {
+    return value;
+  } //获取元素（获取写入）
   A &operator=(const A &a);
   A() {}
   ~A() {}
