@@ -71,7 +71,7 @@ int main(int argc, char const **argv)
     const string folderName = string(cm[0].first, cm[0].second);
 
     //文件夹路径
-    const string folderPath = path + "\\" + folderName + ".0x" + "\\";
+    const string folderPath = path + folderName + ".0x" + "\\";
     if (!isPathExist(folderPath))
     {
       mkdir(folderPath.c_str());
