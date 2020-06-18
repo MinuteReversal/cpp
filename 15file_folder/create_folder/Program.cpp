@@ -9,7 +9,7 @@ int main(int argc, char **argv)
     char *folderName = "AAA";
     if (access(folderName, 6) == -1)
     {
-        mkdir(folderName);
+        mkdir(folderName);        
     }
     return 0;
 }
