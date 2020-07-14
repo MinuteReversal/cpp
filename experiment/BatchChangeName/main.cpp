@@ -78,7 +78,7 @@ private:
   {
     //匹配到的名字
     cmatch cm;
-    regex_search(fileName.c_str(), cm, regex("(\\d)"));
+    regex_search(fileName.c_str(), cm, regex("(\\d)(?=x.)", regex_constants::ECMAScript));
     const string size = string(cm[0].first, cm[0].second);
     return size;
   }
@@ -140,11 +140,11 @@ public:
 
 int main(int argc, char const **argv)
 {
-  string path = "";
-  if (argc > 1)
-  {
-    path = argv[1];
-  }
+  string path = "C:\\Users\\Administrator\\Desktop\\后补图标\\后补图标";
+  // if (argc > 1)
+  // {
+  //   path = argv[1];
+  // }
 
   BatchRename *br = new BatchRename();
   br->execute(path);
