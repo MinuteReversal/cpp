@@ -1,13 +1,11 @@
 #include <iostream>
 #include <thread>
 
-using namespace std;
-
 void fn1()
 {
     while (true)
     {
-        cout << "Playing Guitar" << endl;
+        std::cout << "Playing Guitar" << std::endl;
     }
 }
 
@@ -15,7 +13,7 @@ void fn2()
 {
     while (true)
     {
-        cout << "Sing Song" << endl;
+        std::cout << "Sing Song" << std::endl;
     }
 }
 
