@@ -8,3 +8,4 @@ cpp program
 [mingw-w64](http://mingw-w64.org/doku.php)  
 [clang](https://releases.llvm.org/download.html)  
 [blog](https://zh4ui.net/post/2019-01-08-clang-on-windows/)
+[https://docs.microsoft.com/en-us/cpp/?view=vs-2019](https://docs.microsoft.com/en-us/cpp/?view=vs-2019)
