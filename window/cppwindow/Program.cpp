@@ -13,7 +13,7 @@ description : https://docs.microsoft.com/en-us/windows/win32/learnwin32/your-fir
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-int main(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow)
+int WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine, int nCmdShow)
 {
     // Register the window class.
     const wchar_t CLASS_NAME[] = L"Sample Window Class";

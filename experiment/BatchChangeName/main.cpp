@@ -140,7 +140,7 @@ public:
 
 int main(int argc, char const **argv)
 {
-  string path = "C:\\Users\\Administrator\\Desktop\\后补图标\\后补图标";
+  string path = "C:\\Users\\Administrator\\Desktop\\assets";
   // if (argc > 1)
   // {
   //   path = argv[1];
