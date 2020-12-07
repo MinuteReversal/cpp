@@ -4,6 +4,7 @@
 #endif
 
 #include <windows.h>
+
 template <class DERIVED_TYPE>
 class BaseWindow
 {
@@ -70,4 +71,3 @@ protected:
 
   HWND m_hwnd;
 };
-

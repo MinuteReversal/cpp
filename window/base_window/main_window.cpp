@@ -18,7 +18,12 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
   case WM_DESTROY:
     PostQuitMessage(0);
     return 0;
-
+  case WM_CLOSE:
+    if (MessageBox(m_hwnd, L"Really quit?", ClassName(), MB_OKCANCEL) == IDOK)
+    {
+      DestroyWindow(m_hwnd);
+    }
+    return 0;
   case WM_PAINT:
   {
     PAINTSTRUCT ps;
