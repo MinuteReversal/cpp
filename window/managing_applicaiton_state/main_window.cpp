@@ -4,7 +4,7 @@
 #define UNICODE
 #endif
 #include <windows.h>
-#include "base_window.h"
+#include "../base_window/base_window.h"
 
 class MainWindow : public BaseWindow<MainWindow>
 {
