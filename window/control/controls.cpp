@@ -11,6 +11,7 @@ class MainWindow : public BaseWindow<MainWindow>
 public:
   PCWSTR ClassName() const { return L"Sample Window Class"; }
   LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
+  void onCreate();
   void onPaint();
 };
 
@@ -18,10 +19,12 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   switch (uMsg)
   {
+  case WM_CREATE:
+    onCreate();
+    return 0;
   case WM_DESTROY:
     PostQuitMessage(0);
     return 0;
-
   case WM_PAINT:
     onPaint();
     return 0;
@@ -31,16 +34,28 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
   return TRUE;
 }
 
+void MainWindow::onCreate()
+{
+  //按钮
+  HWND hwndButton = CreateWindow(
+      L"BUTTON",                                             // Predefined class; Unicode assumed
+      L"OK",                                                 // Button text
+      WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON, // Styles
+      10,                                                    // x position
+      10,                                                    // y position
+      100,                                                   // Button width
+      100,                                                   // Button height
+      m_hwnd,                                                // Parent window
+      NULL,                                                  // No menu.
+      (HINSTANCE)GetWindowLongPtr(m_hwnd, GWLP_HINSTANCE),
+      NULL);
+}
+
 /**
  * 画线
  */
 void MainWindow::onPaint()
 {
-  PAINTSTRUCT ps;
-  HDC hdc = BeginPaint(m_hwnd, &ps);
-  FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-  TextOut(hdc, 10, 10, L"你好世界", 4);
-  EndPaint(m_hwnd, &ps);
 }
 
 /**
