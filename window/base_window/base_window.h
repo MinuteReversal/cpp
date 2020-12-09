@@ -48,7 +48,7 @@ public:
       HWND hWndParent = 0,
       HMENU hMenu = 0)
   {
-    WNDCLASS wc = {0};
+    WNDCLASS wc = {};
 
     wc.lpfnWndProc = DERIVED_TYPE::WindowProc;
     wc.hInstance = GetModuleHandle(NULL);

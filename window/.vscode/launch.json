@@ -9,7 +9,9 @@
       "args": [
         "-fexec-charset=GBK", // 处理mingw中文编码问题
         "-finput-charset=UTF-8",
-        "-pthread" // 处理mingw中文编码问题
+        "-pthread", // 处理mingw中文编码问题
+        "-lgdiplus",
+        "-mwindows"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
