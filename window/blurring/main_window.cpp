@@ -1,8 +1,10 @@
 //https://docs.microsoft.com/en-us/windows/win32/dwm/blur-ovw
+//https://tieba.baidu.com/p/6455993677
 #ifndef UNICODE
 #define UNICODE
 #endif
 #include <windows.h>
+#include <gdiplus.h>
 #include "swcadef.h"
 #include "../base_window/base_window.h"
 
@@ -20,6 +22,7 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   switch (uMsg)
   {
+  
   case WM_CREATE:
     Blur(m_hwnd);
     return 0;
@@ -33,11 +36,10 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
   {
     PAINTSTRUCT ps;
     HDC hdc = BeginPaint(m_hwnd, &ps);
-    // FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+    // FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW));
     EndPaint(m_hwnd, &ps);
   }
     return 0;
-
   default:
     return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
   }

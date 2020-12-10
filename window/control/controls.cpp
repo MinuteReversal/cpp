@@ -94,7 +94,7 @@ void MainWindow::onPaint()
 {
   PAINTSTRUCT ps;
   HDC hdc = BeginPaint(m_hwnd, &ps);
-  FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+  FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW));
   EndPaint(m_hwnd, &ps);
 }
 
