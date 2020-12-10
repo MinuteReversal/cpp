@@ -3,7 +3,7 @@
 #define UNICODE
 #endif
 #include <windows.h>
-#include <dwmapi.h>
+#include "swcadef.h"
 #include "../base_window/base_window.h"
 
 class MainWindow : public BaseWindow<MainWindow>
@@ -11,26 +11,29 @@ class MainWindow : public BaseWindow<MainWindow>
 public:
   PCWSTR ClassName() const { return L"Sample Window Class"; }
   LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+private:
+  void Blur(HWND hwnd);
 };
 
 LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   switch (uMsg)
   {
+  case WM_CREATE:
+    Blur(m_hwnd);
+    return 0;
   case WM_DESTROY:
     PostQuitMessage(0);
     return 0;
   case WM_CLOSE:
-    if (MessageBox(m_hwnd, L"Really quit?", ClassName(), MB_OKCANCEL) == IDOK)
-    {
-      DestroyWindow(m_hwnd);
-    }
+    DestroyWindow(m_hwnd);
     return 0;
   case WM_PAINT:
   {
     PAINTSTRUCT ps;
     HDC hdc = BeginPaint(m_hwnd, &ps);
-    FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+    // FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
     EndPaint(m_hwnd, &ps);
   }
     return 0;
@@ -41,22 +44,18 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
   return TRUE;
 }
 
-HRESULT ExtendIntoClientAll(HWND hwnd)
+void MainWindow::Blur(HWND hwnd)
 {
-  HRESULT hr = S_OK;
+  const auto SetWindowCompositionAttribute =
+      reinterpret_cast<PFN_SET_WINDOW_COMPOSITION_ATTRIBUTE>(GetProcAddress(GetModuleHandle(L"user32.dll"), "SetWindowCompositionAttribute"));
 
-  // Negative margins have special meaning to DwmExtendFrameIntoClientArea.
-  // Negative margins create the "sheet of glass" effect, where the client
-  // area is rendered as a solid surface without a window border.
-  MARGINS margins = {-1};
+  ACCENT_POLICY accent = {ACCENT_ENABLE_BLURBEHIND, 0, 0, 0};
+  WINDOWCOMPOSITIONATTRIBDATA data;
+  data.Attrib = WCA_ACCENT_POLICY;
+  data.pvData = &accent;
+  data.cbData = sizeof(accent);
 
-  // Extend the frame across the whole window.
-  hr = DwmExtendFrameIntoClientArea(hwnd, &margins);
-  if (SUCCEEDED(hr))
-  {
-    // ...
-  }
-  return hr;
+  SetWindowCompositionAttribute(hwnd, &data);
 }
 
 int WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine, int nCmdShow)
@@ -69,7 +68,6 @@ int WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine, int nCmdShow)
   }
 
   HWND w = win.Window();
-  ExtendIntoClientAll(w);
   ShowWindow(w, nCmdShow);
 
   // Run the message loop.
