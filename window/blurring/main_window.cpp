@@ -1,8 +1,10 @@
+//https://docs.microsoft.com/en-us/windows/win32/dwm/blur-ovw
 #ifndef UNICODE
 #define UNICODE
 #endif
 #include <windows.h>
-#include "base_window.h"
+#include <dwmapi.h>
+#include "../base_window/base_window.h"
 
 class MainWindow : public BaseWindow<MainWindow>
 {
@@ -19,10 +21,10 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     PostQuitMessage(0);
     return 0;
   case WM_CLOSE:
-    // if (MessageBox(m_hwnd, L"Really quit?", ClassName(), MB_OKCANCEL) == IDOK)
-    // {
-    DestroyWindow(m_hwnd);
-    // }
+    if (MessageBox(m_hwnd, L"Really quit?", ClassName(), MB_OKCANCEL) == IDOK)
+    {
+      DestroyWindow(m_hwnd);
+    }
     return 0;
   case WM_PAINT:
   {
@@ -39,6 +41,24 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
   return TRUE;
 }
 
+HRESULT ExtendIntoClientAll(HWND hwnd)
+{
+  HRESULT hr = S_OK;
+
+  // Negative margins have special meaning to DwmExtendFrameIntoClientArea.
+  // Negative margins create the "sheet of glass" effect, where the client
+  // area is rendered as a solid surface without a window border.
+  MARGINS margins = {-1};
+
+  // Extend the frame across the whole window.
+  hr = DwmExtendFrameIntoClientArea(hwnd, &margins);
+  if (SUCCEEDED(hr))
+  {
+    // ...
+  }
+  return hr;
+}
+
 int WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine, int nCmdShow)
 {
   MainWindow win;
@@ -48,7 +68,9 @@ int WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine, int nCmdShow)
     return 0;
   }
 
-  ShowWindow(win.Window(), nCmdShow);
+  HWND w = win.Window();
+  ExtendIntoClientAll(w);
+  ShowWindow(w, nCmdShow);
 
   // Run the message loop.
 
