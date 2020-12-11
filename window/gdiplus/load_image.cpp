@@ -52,27 +52,8 @@ void MainWindow::OnPaint(HDC hdc)
 {
   Gdiplus::Graphics graphics(hdc);
 
-  SolidBrush solidBrush(Gdiplus::Color(255, 255, 0, 0));
-  Gdiplus::Status stat;
-
-  Gdiplus::Image image(L"D:\\code\\CPlusPlus\\cpp\\window\\gdiplus\\images\\HouseAndTree.png");
-  TextureBrush tBrush(&image);
-  Pen blackPen(Gdiplus::Color(255, 0, 0, 0));
-
-  stat = graphics.FillRectangle(&tBrush, Gdiplus::Rect(0, 0, 200, 200));
-  stat = graphics.DrawRectangle(&blackPen, Gdiplus::Rect(0, 0, 200, 200));
-
-  stat = tBrush.SetWrapMode(Gdiplus::WrapModeTileFlipX);
-  stat = graphics.FillRectangle(&tBrush, Gdiplus::Rect(210, 0, 200, 200));
-  stat = graphics.DrawRectangle(&blackPen, Gdiplus::Rect(210, 0, 200, 200));
-
-  stat = tBrush.SetWrapMode(Gdiplus::WrapModeTileFlipY);
-  stat = graphics.FillRectangle(&tBrush, Gdiplus::Rect(420, 0, 200, 200));
-  stat = graphics.DrawRectangle(&blackPen, Gdiplus::Rect(420, 0, 200, 200));
-
-  stat = tBrush.SetWrapMode(Gdiplus::WrapModeTileFlipXY);
-  stat = graphics.FillRectangle(&tBrush, Gdiplus::Rect(630, 0, 200, 200));
-  stat = graphics.DrawRectangle(&blackPen, Gdiplus::Rect(630, 0, 200, 200));
+  Gdiplus::Image image(L"D:\\code\\CPlusPlus\\cpp\\window\\gdiplus\\images\\Grape.jpg");
+  graphics.DrawImage(&image, 60, 10);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
