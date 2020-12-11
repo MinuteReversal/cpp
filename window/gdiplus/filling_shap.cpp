@@ -57,8 +57,8 @@ void MainWindow::OnPaint(HDC hdc)
   //画线
   Gdiplus::GraphicsPath path;
   path.StartFigure();
-  path.AddLine(Point(0, 0), Point(200, 50));
-  path.AddLine(Point(200, 50), Point(0, 100));
+  path.AddLine(Gdiplus::Point(0, 0), Gdiplus::Point(200, 50));
+  path.AddLine(Gdiplus::Point(200, 50), Gdiplus::Point(0, 100));
 
   //填充路径
   graphics.FillPath(&solidBrush, &path);
@@ -76,8 +76,13 @@ void MainWindow::OnPaint(HDC hdc)
   Gdiplus::Point points[] = {Gdiplus::Point(500, 0), Gdiplus::Point(600, 100), Gdiplus::Point(700, 0)};
   graphics.FillClosedCurve(&solidBrush, points, ARRAYSIZE(points));
 
-  //贝塞尔曲线
-  //graphics.DrawBezier(&pen, 700, 0, 800, 0, 700, 100, 800, 100);
+  //多边形
+  Gdiplus::Point points2[] = {Gdiplus::Point(700, 0), Gdiplus::Point(800, 100), Gdiplus::Point(900, 0)};
+  graphics.FillPolygon(&solidBrush, points2, ARRAYSIZE(points2));
+
+  //区域
+  Gdiplus::Region region(Gdiplus::Rect(0, 100, 100, 100));
+  graphics.FillRegion(&solidBrush, &region);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
