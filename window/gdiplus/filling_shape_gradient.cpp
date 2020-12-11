@@ -52,12 +52,46 @@ void MainWindow::OnPaint(HDC hdc)
 {
   Gdiplus::Graphics graphics(hdc);
 
-  Gdiplus::Image image(L"D:\\code\\CPlusPlus\\cpp\\window\\gdiplus\\images\\Texture1.jpg");
-  Gdiplus::TextureBrush tBrush(&image);
-  Gdiplus::Pen texturedPen(&tBrush, 30);
+  SolidBrush solidBrush(Color(255, 255, 0, 0));
 
-  graphics.DrawImage(&image, 0, 0, image.GetWidth(), image.GetHeight());
-  graphics.DrawEllipse(&texturedPen, 100, 20, 200, 100);
+  //画线
+  Gdiplus::GraphicsPath path;
+  LinearGradientBrush linGrBrush(
+      Point(0, 10),
+      Point(200, 10),
+      Color(255, 255, 0, 0),  // opaque red
+      Color(255, 0, 0, 255)); // opaque blue
+
+  Pen pen(&linGrBrush);
+
+  graphics.DrawLine(&pen, 0, 10, 200, 10);
+  graphics.FillEllipse(&linGrBrush, 0, 30, 200, 100);
+  graphics.FillRectangle(&linGrBrush, 0, 155, 500, 30);
+
+  LinearGradientBrush linGrBrush2(
+      Point(0, 10),
+      Point(200, 10),
+      Color(255, 0, 0, 0),    // opaque black
+      Color(255, 255, 0, 0)); // opaque red
+
+  REAL relativeIntensities[] = {0.0f, 0.5f, 1.0f};
+  REAL relativePositions[] = {0.0f, 0.2f, 1.0f};
+
+  linGrBrush2.SetBlend(relativeIntensities, relativePositions, 3);
+
+  graphics.FillEllipse(&linGrBrush2, 0, 230, 200, 100);
+  graphics.FillRectangle(&linGrBrush2, 0, 355, 500, 30);
+
+  LinearGradientBrush linGrBrush3(
+      Point(0, 0),
+      Point(200, 100),
+      Color(255, 0, 0, 255),  // opaque blue
+      Color(255, 0, 255, 0)); // opaque green
+
+  Pen pen3(&linGrBrush3, 10);
+
+  graphics.DrawLine(&pen3, 0, 400, 600, 600);
+  graphics.FillEllipse(&linGrBrush3, 10, 485, 200, 100);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
