@@ -12,10 +12,9 @@
         "-g",
         "-fexec-charset=GBK", // 处理mingw中文编码问题
         "-finput-charset=UTF-8", // 处理mingw中文编码问题
-        "-lgdiplus",
-        "-ldwmapi",
         "-mwindows",
         "${file}",
+        "-lgdiplus",
         "-o",
         "${fileDirname}\\${fileBasenameNoExtension}.exe"
       ],
