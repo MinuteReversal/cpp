@@ -52,16 +52,9 @@ void MainWindow::OnPaint(HDC hdc)
 {
   Gdiplus::Graphics graphics(hdc);
 
-  //加载图片
-  Gdiplus::Image image(L"D:\\code\\CPlusPlus\\cpp\\window\\gdiplus\\images\\Grape.jpg");
-  //画图片
-  graphics.DrawImage(&image, 60, 10);
-
-  //图标
-  HICON hIcon = LoadIcon(NULL, IDI_APPLICATION);
-  Bitmap bitmap(hIcon);
-  //绘制图标
-  graphics.DrawImage(&bitmap, 10, 10);
+  Image image(L"D:\\code\\CPlusPlus\\cpp\\window\\gdiplus\\images\\Texture.jpg");
+  graphics.DrawImage(&image, 10, 10);
+  graphics.DrawImage(&image, 120, 10, image.GetWidth(), image.GetHeight());
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)

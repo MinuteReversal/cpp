@@ -52,16 +52,15 @@ void MainWindow::OnPaint(HDC hdc)
 {
   Gdiplus::Graphics graphics(hdc);
 
-  //加载图片
-  Gdiplus::Image image(L"D:\\code\\CPlusPlus\\cpp\\window\\gdiplus\\images\\Grape.jpg");
-  //画图片
-  graphics.DrawImage(&image, 60, 10);
-
-  //图标
-  HICON hIcon = LoadIcon(NULL, IDI_APPLICATION);
-  Bitmap bitmap(hIcon);
-  //绘制图标
-  graphics.DrawImage(&bitmap, 10, 10);
+   Gdiplus::Point destinationPoints[] = {
+       Gdiplus::Point(400, 20),  // destination for upper-left point of original
+       Gdiplus::Point(310, 100), // destination for upper-right point of original
+       Gdiplus::Point(450, 30)}; // destination for lower-left point of original
+  Image image(L"D:\\code\\CPlusPlus\\cpp\\window\\gdiplus\\images\\Stripes.bmp");
+  // Draw the image unaltered with its upper-left corner at (0, 0).
+  graphics.DrawImage(&image, 0, 0);
+  // Draw the image mapped to the parallelogram.
+  graphics.DrawImage(&image, destinationPoints, 3);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)

@@ -52,16 +52,33 @@ void MainWindow::OnPaint(HDC hdc)
 {
   Gdiplus::Graphics graphics(hdc);
 
-  //加载图片
-  Gdiplus::Image image(L"D:\\code\\CPlusPlus\\cpp\\window\\gdiplus\\images\\Grape.jpg");
-  //画图片
-  graphics.DrawImage(&image, 60, 10);
+  Gdiplus::Metafile metafile(L"SampleMetafile.emf", hdc);
+  {
+    Graphics graphics(&metafile);
+    Pen greenPen(Color(255, 0, 255, 0));
+    SolidBrush solidBrush(Color(255, 0, 0, 255));
 
-  //图标
-  HICON hIcon = LoadIcon(NULL, IDI_APPLICATION);
-  Bitmap bitmap(hIcon);
-  //绘制图标
-  graphics.DrawImage(&bitmap, 10, 10);
+    // Add a rectangle and an ellipse to the metafile.
+    graphics.DrawRectangle(&greenPen, Rect(50, 10, 25, 75));
+    graphics.DrawEllipse(&greenPen, Rect(100, 10, 25, 75));
+
+    // Add an ellipse (drawn with antialiasing) to the metafile.
+    graphics.SetSmoothingMode(SmoothingModeHighQuality);
+    graphics.DrawEllipse(&greenPen, Rect(150, 10, 25, 75));
+
+    // Add some text (drawn with antialiasing) to the metafile.
+    FontFamily fontFamily(L"Arial");
+    Font font(&fontFamily, 24, FontStyleRegular, UnitPixel);
+
+    graphics.SetTextRenderingHint(TextRenderingHintAntiAlias);
+    graphics.RotateTransform(30.0f);
+    graphics.DrawString(L"Smooth Text", 11, &font,
+                        PointF(50.0f, 50.0f), &solidBrush);
+  } // End of recording metafile.
+
+  // Play back the metafile.
+  Graphics playbackGraphics(hdc);
+  playbackGraphics.DrawImage(&metafile, 200, 100);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)

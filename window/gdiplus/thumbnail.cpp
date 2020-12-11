@@ -52,16 +52,10 @@ void MainWindow::OnPaint(HDC hdc)
 {
   Gdiplus::Graphics graphics(hdc);
 
-  //加载图片
-  Gdiplus::Image image(L"D:\\code\\CPlusPlus\\cpp\\window\\gdiplus\\images\\Grape.jpg");
-  //画图片
-  graphics.DrawImage(&image, 60, 10);
-
-  //图标
-  HICON hIcon = LoadIcon(NULL, IDI_APPLICATION);
-  Bitmap bitmap(hIcon);
-  //绘制图标
-  graphics.DrawImage(&bitmap, 10, 10);
+  Gdiplus::Image image(L"D:\\code\\CPlusPlus\\cpp\\window\\gdiplus\\images\\Compass.bmp");
+  Gdiplus::Image *pThumbnail = image.GetThumbnailImage(100, 100, NULL, NULL);
+  graphics.DrawImage(pThumbnail, 10, 10,
+                     pThumbnail->GetWidth(), pThumbnail->GetHeight());
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)

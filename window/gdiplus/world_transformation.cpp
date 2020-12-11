@@ -52,16 +52,21 @@ void MainWindow::OnPaint(HDC hdc)
 {
   Gdiplus::Graphics graphics(hdc);
 
-  //加载图片
-  Gdiplus::Image image(L"D:\\code\\CPlusPlus\\cpp\\window\\gdiplus\\images\\Grape.jpg");
-  //画图片
-  graphics.DrawImage(&image, 60, 10);
+  Gdiplus::Rect rect(0, 0, 50, 50);
+  Gdiplus::Pen pen(Gdiplus::Color(255, 255, 0, 0), 0);
+  graphics.DrawRectangle(&pen, rect);
 
-  //图标
-  HICON hIcon = LoadIcon(NULL, IDI_APPLICATION);
-  Bitmap bitmap(hIcon);
-  //绘制图标
-  graphics.DrawImage(&bitmap, 10, 10);
+  //缩放
+  graphics.ScaleTransform(1.75f, 0.5f);
+  graphics.DrawRectangle(&pen, rect);
+
+  //旋转
+  graphics.RotateTransform(28.0f);
+  graphics.DrawRectangle(&pen, rect);
+
+  //平移
+  graphics.TranslateTransform(150.0f, 150.0f);
+  graphics.DrawRectangle(&pen, rect);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)

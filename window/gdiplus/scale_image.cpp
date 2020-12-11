@@ -52,16 +52,25 @@ void MainWindow::OnPaint(HDC hdc)
 {
   Gdiplus::Graphics graphics(hdc);
 
-  //加载图片
-  Gdiplus::Image image(L"D:\\code\\CPlusPlus\\cpp\\window\\gdiplus\\images\\Grape.jpg");
-  //画图片
-  graphics.DrawImage(&image, 60, 10);
-
-  //图标
-  HICON hIcon = LoadIcon(NULL, IDI_APPLICATION);
-  Bitmap bitmap(hIcon);
-  //绘制图标
-  graphics.DrawImage(&bitmap, 10, 10);
+  Image image(L"D:\\code\\CPlusPlus\\cpp\\window\\gdiplus\\images\\Apple.gif");
+  UINT width = image.GetWidth();
+  UINT height = image.GetHeight();
+  // Make the destination rectangle 30 percent wider and
+  // 30 percent taller than the original image.
+  // Put the upper-left corner of the destination
+  // rectangle at (150, 20).
+  Rect destinationRect(150, 20, 1.3 * width, 1.3 * height);
+  // Draw the image unaltered with its upper-left corner at (0, 0).
+  graphics.DrawImage(&image, 0, 0);
+  // Draw a portion of the image. Scale that portion of the image
+  // so that it fills the destination rectangle.
+  graphics.DrawImage(
+      &image,
+      destinationRect,
+      0, 0,          // upper-left corner of source rectangle
+      0.75 * width,  // width of source rectangle
+      0.75 * height, // height of source rectangle
+      UnitPixel);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
