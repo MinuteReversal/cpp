@@ -54,6 +54,10 @@ void MainWindow::OnPaint(HDC hdc)
 
   Gdiplus::Image image(L"D:\\code\\CPlusPlus\\cpp\\window\\gdiplus\\images\\Grape.jpg");
   graphics.DrawImage(&image, 60, 10);
+
+  HICON hIcon = LoadIcon(NULL, IDI_APPLICATION);
+  Bitmap bitmap(hIcon);
+  graphics.DrawImage(&bitmap, 10, 10);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
