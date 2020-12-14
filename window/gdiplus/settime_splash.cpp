@@ -21,13 +21,14 @@ class MainWindow : public BaseWindow<MainWindow>
 public:
   PCWSTR ClassName() const { return L"Sample Window Class"; }
   LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
-  void OnPaint(HDC hdc, PAINTSTRUCT ps);
+  void OnPaint(HDC hdc);
+  void OnPaintBG(HDC hdc);
 };
 
 /**
  * 画
  */
-void MainWindow::OnPaint(HDC hdc, PAINTSTRUCT ps)
+void MainWindow::OnPaint(HDC hdc)
 {
   Gdiplus::Graphics graphics(hdc);
 
@@ -35,7 +36,8 @@ void MainWindow::OnPaint(HDC hdc, PAINTSTRUCT ps)
   Gdiplus::FontFamily fontFamily(L"Times New Roman");
   Gdiplus::Font font(&fontFamily, 24, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel);
   Gdiplus::PointF pointF(10.0f, 20.0f);
-  graphics.Clear(Gdiplus::Color(255, 255, 255, 255)); //会闪烁
+
+  graphics.Clear(Gdiplus::Color(255, 255, 255, 255));
 
   SYSTEMTIME systemTime;
   GetLocalTime(&systemTime);
@@ -45,12 +47,22 @@ void MainWindow::OnPaint(HDC hdc, PAINTSTRUCT ps)
   graphics.DrawString(msg.str().c_str(), -1, &font, pointF, &brush);
 }
 
+/**
+ * 背景
+ */
+void MainWindow::OnPaintBG(HDC hdc)
+{
+  Gdiplus::Graphics graphics(hdc);
+  graphics.Clear(Gdiplus::Color(255, 255, 255, 255));
+}
+
 LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   PAINTSTRUCT ps;
   HDC hdc;
   GdiplusStartupInput gdiplusStartupInput;
   ULONG_PTR gdiplusToken;
+  MSG msg = {};
 
   switch (uMsg)
   {
@@ -65,12 +77,16 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     break;
   case WM_PAINT:
     hdc = BeginPaint(m_hwnd, &ps);
-    OnPaint(hdc, ps);
+    OnPaint(hdc);
     EndPaint(m_hwnd, &ps);
     break;
+  case WM_ERASEBKGND:
+    hdc = GetDC(m_hwnd);
+    OnPaintBG(hdc);
+    return TRUE;
   case WM_TIMER:
     hdc = GetDC(m_hwnd);
-    OnPaint(hdc, ps);
+    OnPaint(hdc);
     break;
   default:
     return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
