@@ -6,7 +6,7 @@
 #include <windows.h>
 #include <objidl.h>
 #include <gdiplus.h>
-#include "../base_window/base_window.h"
+#include "../../base_window/base_window.h"
 using namespace Gdiplus;
 #pragma comment(lib, "Gdiplus.lib")
 
@@ -15,8 +15,23 @@ class MainWindow : public BaseWindow<MainWindow>
 public:
   PCWSTR ClassName() const { return L"Sample Window Class"; }
   LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
-  void OnPaint(HDC hdc);
+  void OnPaint(HDC hdc, PAINTSTRUCT ps);
 };
+
+/**
+ * 画
+ */
+void MainWindow::OnPaint(HDC hdc, PAINTSTRUCT ps)
+{
+  Gdiplus::Graphics graphics(hdc);
+
+  //设置笔
+  Pen pen(Gdiplus::Color(255, 0, 0, 255));
+
+  graphics.RotateTransform(45);
+  //画线
+  graphics.DrawLine(&pen, 0, 0, 100, 0);
+}
 
 LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -36,7 +51,7 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     break;
   case WM_PAINT:
     hdc = BeginPaint(m_hwnd, &ps);
-    OnPaint(hdc);
+    OnPaint(hdc, ps);
     EndPaint(m_hwnd, &ps);
     break;
   default:
@@ -45,26 +60,13 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
   return FALSE;
 }
 
-/**
- * 画
- */
-void MainWindow::OnPaint(HDC hdc)
-{
-  Gdiplus::Graphics graphics(hdc);
-  Gdiplus::SolidBrush brush(Gdiplus::Color(255, 0, 0, 255));
-  FontFamily fontFamily(L"Times New Roman");
-  Font font(&fontFamily, 24, ::FontStyleRegular, ::UnitPixel);
-  PointF pointF(10.0f, 20.0f);
-  graphics.DrawString(L"Hello World!", -1, &font, pointF, &brush);
-}
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
 {
   MainWindow win;
 
   if (!win.Create(L"Learn to Program Windows", WS_OVERLAPPEDWINDOW))
   {
-    return EXIT_SUCCESS;
+    return 0;
   }
 
   ShowWindow(win.Window(), nCmdShow);
@@ -78,5 +80,5 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
     DispatchMessage(&msg);
   }
 
-  return EXIT_SUCCESS;
+  return 0;
 }

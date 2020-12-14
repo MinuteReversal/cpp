@@ -54,6 +54,8 @@
         "string": "cpp",
         "system_error": "cpp",
         "initializer_list": "cpp",
-        "mutex": "cpp"
+        "mutex": "cpp",
+        "optional": "cpp",
+        "string_view": "cpp"
     }
 }
