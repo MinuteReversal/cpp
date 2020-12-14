@@ -13,8 +13,11 @@
         "-fexec-charset=GBK", // 处理mingw中文编码问题
         "-finput-charset=UTF-8", // 处理mingw中文编码问题
         "-mwindows",
+        "-W",
         "${file}",
         "-lgdiplus",
+        "-lopengl32",
+        "-lglu32",
         "-o",
         "${fileDirname}\\${fileBasenameNoExtension}.exe"
       ],

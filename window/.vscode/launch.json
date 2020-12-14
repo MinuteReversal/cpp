@@ -11,7 +11,10 @@
         "-finput-charset=UTF-8",
         "-pthread", // 处理mingw中文编码问题
         "-lgdiplus",
+        "-lopengl32",
+        "-lglu32",
         "-mwindows",
+        "-W",
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
