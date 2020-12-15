@@ -14,6 +14,7 @@
         "-lopengl32",
         "-lglu32",
         "-mwindows",
+        "-ldwmapi",
         "-W",
       ],
       "stopAtEntry": false,

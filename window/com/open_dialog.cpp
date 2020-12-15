@@ -1,18 +1,15 @@
 #include <windows.h>
 #include <shobjidl.h>
 
-int WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine, int nCmdShow)
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine, int nCmdShow)
 {
-
-  HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED |
-                                        COINIT_DISABLE_OLE1DDE);
+  // HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
   // if (SUCCEEDED(hr))
   // {
   //   IFileOpenDialog *pFileOpen;
 
   //   // Create the FileOpenDialog object.
-  //   hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL,
-  //                         IID_IFileOpenDialog, reinterpret_cast<void **>(&pFileOpen));
+  //   hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void **>(&pFileOpen));
 
   //   if (SUCCEEDED(hr))
   //   {
@@ -40,7 +37,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine, int nCmdShow)
   //     }
   //     pFileOpen->Release();
   //   }
-  CoUninitialize();
-
-  return 0;
+  //   CoUninitialize();
+  // }
+  return EXIT_SUCCESS;
 }

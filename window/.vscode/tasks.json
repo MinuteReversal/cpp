@@ -18,6 +18,7 @@
         "-lgdiplus",
         "-lopengl32",
         "-lglu32",
+        "-ldwmapi",
         "-o",
         "${fileDirname}\\${fileBasenameNoExtension}.exe"
       ],

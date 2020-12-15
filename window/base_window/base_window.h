@@ -53,7 +53,7 @@ public:
     wc.lpfnWndProc = DERIVED_TYPE::WindowProc;
     wc.hInstance = GetModuleHandle(NULL);
     wc.lpszClassName = ClassName();
-    // wc.hbrBackground =  (HBRUSH)GetStockObject(WHITE_BRUSH);
+    wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
 
     RegisterClass(&wc);
 
