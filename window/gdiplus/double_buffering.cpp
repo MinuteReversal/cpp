@@ -1,5 +1,6 @@
 //https://docs.microsoft.com/zh-cn/windows/win32/gdiplus/-gdiplus-drawing-a-line-use
 //https://docs.microsoft.com/en-us/windows/win32/gdi/drawing-at-timed-intervals
+//https://www.cnblogs.com/personnel/p/4585017.html
 
 #ifndef UNICODE
 #define UNICODE
@@ -22,14 +23,45 @@ public:
   PCWSTR ClassName() const { return L"Sample Window Class"; }
   LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
   void OnPaint(HDC hdc);
-  void OnPaintBG(HDC hdc);
+  void DoubleBuffering(HDC hdc);
 };
+
+/**
+ * 双线缓冲
+ */
+void MainWindow::DoubleBuffering(HDC hdc_old)
+{
+  //用于缓冲的内存DC
+
+  HDC hdc = CreateCompatibleDC(hdc_old);
+  //需要获取窗口的宽与高, 缓制尺寸
+  RECT clientRect;
+  GetClientRect(m_hwnd, &clientRect);
+  //创建内存兼容位图hBmp
+  HBITMAP hBmp = CreateCompatibleBitmap(hdc_old, clientRect.right, clientRect.bottom);
+  //将内存位图选入缓冲内存DC中——以便可以绘制多个位图
+  SelectObject(hdc, hBmp);
+  //如果不执行这两步, 窗口显示出来会出现黑色背景
+  //SelectObject(hdc, GetSysColorBrush(COLOR_3DFACE)); //设置刷子颜色 - Rectangle()的填充色
+  //由于 Rectangle() 画出有黑色边框线, 这里故意从 -1,-1 绘制 +2, +2, 这样黑色边框线超出可视范围,就看不到了
+  Rectangle(hdc, -1, -1, clientRect.right + 1, clientRect.bottom + 1); //画窗体的整个背景
+
+  //调用绘画
+  OnPaint(hdc);
+
+  //将内存中的内容显示到窗口 - 使用bitblt函数
+  BitBlt(hdc_old, 0, 0, clientRect.right, clientRect.bottom, hdc, 0, 0, SRCCOPY);
+  //注意回收内存资源
+  DeleteObject(hBmp);
+  DeleteDC(hdc);
+}
 
 /**
  * 画
  */
 void MainWindow::OnPaint(HDC hdc)
 {
+
   Gdiplus::Graphics graphics(hdc);
 
   Gdiplus::SolidBrush brush(Gdiplus::Color(255, 0, 0, 255));
@@ -37,23 +69,12 @@ void MainWindow::OnPaint(HDC hdc)
   Gdiplus::Font font(&fontFamily, 24, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel);
   Gdiplus::PointF pointF(10.0f, 20.0f);
 
-  graphics.Clear(Gdiplus::Color(255, 255, 255, 255));
-
   SYSTEMTIME systemTime;
   GetLocalTime(&systemTime);
 
   std::wstringstream msg;
   msg << systemTime.wHour << ":" << systemTime.wMinute << ":" << systemTime.wSecond;
   graphics.DrawString(msg.str().c_str(), -1, &font, pointF, &brush);
-}
-
-/**
- * 背景
- */
-void MainWindow::OnPaintBG(HDC hdc)
-{
-  Gdiplus::Graphics graphics(hdc);
-  graphics.Clear(Gdiplus::Color(255, 255, 255, 255));
 }
 
 LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -77,16 +98,14 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     break;
   case WM_PAINT:
     hdc = BeginPaint(m_hwnd, &ps);
-    OnPaint(hdc);
+    DoubleBuffering(hdc);
     EndPaint(m_hwnd, &ps);
     break;
   case WM_ERASEBKGND:
-    hdc = GetDC(m_hwnd);
-    OnPaintBG(hdc);
     return TRUE;
   case WM_TIMER:
     hdc = GetDC(m_hwnd);
-    OnPaint(hdc);
+    DoubleBuffering(hdc);
     break;
   default:
     return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
