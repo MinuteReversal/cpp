@@ -11,8 +11,6 @@
 #include <iostream>
 #include <sstream>
 #include "../base_window/base_window.h"
-using namespace std;
-#pragma comment(lib, "Gdiplus.lib")
 
 #define IDT_TIMER1 1
 
