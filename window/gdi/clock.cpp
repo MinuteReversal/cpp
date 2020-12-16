@@ -70,10 +70,11 @@ void MainWindow::OnPaint(HDC hdc)
 
   SYSTEMTIME time;
   GetLocalTime(&time);
-
-  DrawHand(hdc, 100, 8, (time.wHour + time.wMinute / 60.0) / 12.0 * 360, COLORREF(0x00000000));
-  DrawHand(hdc, 120, 6, time.wMinute / 60.0 * 360, COLORREF(0x00000000));
-  DrawHand(hdc, 150, 1, time.wSecond / 60.0 * 360, COLORREF(0x000000FF));
+  double m = time.wMinute / 60.0;
+  double s = time.wSecond / 60.0;
+  DrawHand(hdc, 100, 8, (time.wHour + m) / 12.0 * 360, COLORREF(0x00000000));
+  DrawHand(hdc, 120, 6, (time.wMinute + s) / 60.0 * 360, COLORREF(0x00000000));
+  DrawHand(hdc, 150, 1, s * 360, COLORREF(0x000000FF));
 }
 
 /**
