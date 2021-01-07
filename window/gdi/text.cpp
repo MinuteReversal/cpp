@@ -46,7 +46,7 @@ void MainWindow::onPaint()
 /**
  * 入口
  */
-int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
 {
   MainWindow win;
 

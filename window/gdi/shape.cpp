@@ -60,7 +60,7 @@ void MainWindow::onPaint()
   EndPaint(m_hwnd, &ps);
 }
 
-int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
 {
   MainWindow win;
 
