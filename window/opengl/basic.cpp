@@ -124,11 +124,8 @@ HWND CreateOpenGLWindow(PCWSTR title, int x, int y, int width, int height, BYTE 
     MessageBox(hWnd, L"SetPixelFormat() failed: Cannot set format specified.", L"Error", MB_OK);
     return 0;
   }
-
   DescribePixelFormat(hDC, pf, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
-
   ReleaseDC(hWnd, hDC);
-
   return hWnd;
 }
 
