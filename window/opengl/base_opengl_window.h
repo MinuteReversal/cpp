@@ -13,13 +13,14 @@ protected:
   HGLRC hRC;
   PAINTSTRUCT ps;
 
+  //https://riptutorial.com/opengl/example/5305/manual-opengl-setup-on-windows
   void SetDCPixelFormat(HDC hDC)
   {
     int pf;
     PIXELFORMATDESCRIPTOR pfd;
     /* there is no guarantee that the contents of the stack that become
        the pfd are zeroed, therefore _make sure_ to clear these bits. */
-    memset(&pfd, 0, sizeof(pfd));
+    ZeroMemory(&pfd, sizeof(pfd));
     pfd.nSize = sizeof(pfd);
     pfd.nVersion = 1;
     pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL;
