@@ -14,7 +14,7 @@
 
 #define IDT_TIMER1 1
 #if !defined(M_PI)
-#define M_PI 3.14159265F
+#define M_PI 3.141592653F
 #endif
 
 enum StateEnum
@@ -80,6 +80,8 @@ private:
   BOOL doubleBuffered = false;
   BOOL renderToDIB = false;
 
+  GLfloat x, y, z;
+
 public:
   PCWSTR ClassName() const { return L"OpenGL"; }
   void onResize(int width, int height)
@@ -99,6 +101,7 @@ public:
       SetDCPixelFormat(hDC);
       hRC = wglCreateContext(hDC);
       wglMakeCurrent(hDC, hRC);
+      SetTimer(m_hwnd, IDT_TIMER1, 1000 / 60, NULL);
       init();
       break;
     case WM_DESTROY:
@@ -110,6 +113,9 @@ public:
       ReleaseDC(m_hwnd, hDC);
       wglDeleteContext(hRC);
       DestroyWindow(m_hwnd);
+      break;
+    case WM_TIMER:
+      OnPaint();
       break;
     case WM_SIZE:
       /**
@@ -227,8 +233,6 @@ public:
 
   void doRedraw()
   {
-    static GLfloat x, y, z;
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glPushMatrix();
@@ -252,13 +256,13 @@ public:
       SwapBuffers(hDC);
     }
 
-    x += 5.0F;
+    x += 0.5F;
     if (x > 360.0F)
       x -= 360.0F;
-    y += 7.0F;
+    y += 0.7F;
     if (y > 360.0F)
       y -= 360.0F;
-    z += 9.0F;
+    z += 0.9F;
     if (z > 360.0F)
       z -= 360.0F;
   }
