@@ -32,7 +32,9 @@
 *.app
 *.pdb
 *.ilk
+*.zip
 
 ./wasm/*.js
 ./wasm/*.html
 ./wasm/*.exe
+window/opengl/win32_tutorial.zip

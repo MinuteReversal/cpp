@@ -8,7 +8,7 @@
 
 #define IDT_TIMER1 1
 
-//绘制平面
+//绘制立方体
 class MainWindow : public BaseOpenGLWindow<MainWindow>
 {
 public:

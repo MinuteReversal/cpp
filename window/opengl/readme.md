@@ -13,6 +13,7 @@
 - Add glut32.dll to C:\Windows\System32 (or your executable's folder)
 - Add glut32.lib (glee.lib, glew.lib, etc.) to your project's source folder
 - See the Getting Started section for a kick start on the configuration and use of GLee [3] and GLEW [4]
+
 ## API
 
 [https://www.talisman.org/opengl-1.1/Reference/glDrawElements.html](glDrawElements)

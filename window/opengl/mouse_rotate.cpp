@@ -109,11 +109,11 @@ public:
       my = HIWORD(lParam);
       if (uMsg == WM_LBUTTONDOWN)
       {
-        state |= PAN;
+        state |= ROTATE;
       }
       if (uMsg == WM_RBUTTONDOWN)
       {
-        state |= ROTATE;
+        state |= PAN;
       }
       break;
     case WM_LBUTTONUP:
