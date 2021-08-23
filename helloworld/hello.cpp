@@ -2,6 +2,6 @@
 
 int main()
 {
-  std::cout<<"change word"<<std::endl;
+  std::cout<<"change word is very well!"<<std::endl;
   return 0;
 }
