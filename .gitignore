@@ -38,3 +38,4 @@
 ./wasm/*.html
 ./wasm/*.exe
 window/opengl/win32_tutorial.zip
+*.dSYM
