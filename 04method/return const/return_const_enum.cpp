@@ -1,4 +1,5 @@
 #include <iostream>
+#include "test_enum.h"
 #include "return_const_enum.h"
 
 using namespace std;
