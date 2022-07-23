@@ -2,6 +2,7 @@
 #include <exception>
 #include <future>
 #include <iostream>
+#include <ostream>
 #include <string>
 #include <system_error>
 #include <thread>
@@ -40,8 +41,7 @@ future<void> fn5() {
   promise<void> p;
   cout << "fn5" << endl;
   // https://cplusplus.com/reference/future/promise/set_exception/
-  p.set_exception(
-      make_exception_ptr(invalid_argument("hello world")));
+  p.set_exception(make_exception_ptr(invalid_argument("hello world")));
   return p.get_future();
 }
 
@@ -57,5 +57,8 @@ int main(int argc, char **argv) {
   }
   cout << r1 << endl;
   cout << r2 << endl;
+  auto fn6 = [] { return 6; };
+  int r3 = async(fn6).get();
+  cout << r3 << endl;
   return 0;
 }
