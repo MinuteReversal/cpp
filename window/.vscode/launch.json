@@ -2,6 +2,18 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "C/C++: cl.exe build and debug active file",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "preLaunchTask": "C/C++: cl.exe build active file"
+    },
+    {
       "name": "g++ build and debug active file",
       "type": "cppdbg",
       "request": "launch",
@@ -15,7 +27,7 @@
         "-lglu32",
         "-mwindows",
         "-ldwmapi",
-        "-W",
+        "-W"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
