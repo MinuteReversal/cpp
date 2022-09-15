@@ -24,6 +24,7 @@ public:
 void MainWindow::OnPaint(HDC hdc, PAINTSTRUCT ps)
 {
   Gdiplus::Graphics graphics(hdc);
+  graphics.Clear(Color(255, 255, 255, 255));//清空画布
 
   //设置笔
   Pen pen(Gdiplus::Color(255, 0, 0, 255));
