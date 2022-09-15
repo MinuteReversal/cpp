@@ -5,7 +5,7 @@ author      : 114233763@qq.com
 date        : 2020-07-30 14:38:27
 version     : v1
 description :
-https://docs.microsoft.com/en-us/windows/win32/learnwin32/your-first-windows-program
+https://docs.microsoft.com/en-us/windows/win32/wmp/hosting-the-windows-media-player-control-in-a-windows-application
 ***************************************************************************** */
 #ifndef UNICODE
 #define UNICODE
@@ -19,12 +19,10 @@ https://docs.microsoft.com/en-us/windows/win32/learnwin32/your-first-windows-pro
 #include <atlhost.h>
 #include <windows.h>
 
-#define SZ_WNDCLASS_PLAY _T("PLAY WNDCLASS")
-#define WM_PLAYNOTIFY (WM_USER + 1000)
-
-HINSTANCE m_hInstance; // application instance handle
-HWND m_hWnd;           // video frame window
-enum { POSITIONVIEW_TIME, POSITIONVIEW_FRAME, POSITIONVIEW_TRACKING };
+HINSTANCE m_hInstance;             // application instance handle
+HWND m_hWnd;                       // video frame window
+CAxWindow m_wndView;               // ActiveX host window class.
+CComPtr<IWMPPlayer> m_spWMPPlayer; // Smart pointer to IWMPPlayer interface.
 
 /**
  * @brief WindowProcedure
@@ -44,6 +42,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     break;
   }
   case WM_CREATE: {
+    CComPtr<IAxWinHostWindow> spHost;
+    HRESULT hr;
+    RECT rcClient;
+    GetClientRect(hwnd, &rcClient);
+    m_wndView.Create(m_hWnd, rcClient, NULL,
+                     WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
+    hr = m_wndView.QueryHost(&spHost);
+    hr = spHost->CreateControl(CComBSTR(_T("{6BF52A52-394A-11d3-B153-00C04F79FAA6}")), m_wndView, 0);
+    hr = m_wndView.QueryControl(&m_spWMPPlayer);
     break;
   }
   case WM_DESTROY:
@@ -116,7 +123,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine, int nCmdShow) {
     return 0;
   }
   m_hWnd = hwnd;
-
+  AtlAxWinInit();
   ShowWindow(hwnd, nCmdShow);
 
   // Run the message loop.
