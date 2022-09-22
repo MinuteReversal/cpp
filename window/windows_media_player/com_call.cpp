@@ -11,14 +11,8 @@
 ***************************************************************************** */
 #ifndef UNICODE
 #define UNICODE
-#include <atlcomcli.h>
 #include <exception>
-#include <excpt.h>
-#include <minwindef.h>
 #include <stdlib.h>
-#include <windef.h>
-#include <winerror.h>
-#include <winuser.h>
 #endif
 
 #include "wmp.h"
@@ -57,42 +51,20 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
   }
   case WM_CREATE: {
 
-    // CoInitialize(NULL);
-    RECT rcClient = {0, 0, 400, 300};
+    CoInitialize(NULL);
     HRESULT hr = S_OK;
 
-    // GetClientRect(m_hWnd, &rcClient);
-
-    if (FALSE == AtlAxWinInit()) {
-      MessageBox(hwnd, L"fail", L"error", MB_OK);
-    }
-    m_wndView.Create(m_hWnd, rcClient, NULL,
-                     WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
-    if (NULL == m_wndView.m_hWnd) {
-      throw std::exception("create error");
-    }
-    // hr = spPlayer.CoCreateInstance(__uuidof(WindowsMediaPlayer), 0,
-    //                                CLSCTX_INPROC_SERVER);
-
-    hr = m_wndView.QueryHost(&spHost);
-
-    if (SUCCEEDED(hr)) {
-      hr = spHost->CreateControl(CComBSTR(__uuidof(WindowsMediaPlayer)),
-                                 m_wndView, 0);
-    }
-
-    if (SUCCEEDED(hr)) {
-      hr = m_wndView.QueryControl(&spPlayer);
-    }
+    hr = spPlayer.CoCreateInstance(__uuidof(WindowsMediaPlayer), 0,
+                                   CLSCTX_INPROC_SERVER);
 
     if (SUCCEEDED(hr)) {
       hr = spPlayer->get_versionInfo(&bstrVersionInfo);
+      COLE2T pStr(bstrVersionInfo);
+      MessageBox(m_hWnd, pStr, _T("Windows Media Player Version"), MB_OK);
     }
 
     if (SUCCEEDED(hr)) {
       // Show the version in a message box.
-      COLE2T pStr(bstrVersionInfo);
-      MessageBox(NULL, pStr, _T("Windows Media Player Version"), MB_OK);
       spPlayer->get_controls(&controls);
       spPlayer->get_currentPlaylist(&playlist);
 
@@ -105,8 +77,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
   }
   case WM_DESTROY:
     // Clean up.
-    // spPlayer.Release();
-    // CoUninitialize();
+    spPlayer.Release();
+    CoUninitialize();
     PostQuitMessage(0);
     break;
   case WM_PAINT: {

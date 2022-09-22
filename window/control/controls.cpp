@@ -12,7 +12,7 @@
 #define IDC_BUTTON_1 0x1
 #define IDC_BUTTON_2 0x2
 
-class MainWindow : public BaseWindow<MainWindow>
+class WmpMainWindow : public BaseWindow<WmpMainWindow>
 {
 public:
   PCWSTR ClassName() const { return L"Sample Window Class"; }
@@ -26,7 +26,7 @@ private:
   HWND button2;
 };
 
-LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT WmpMainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   switch (uMsg)
   {
@@ -51,12 +51,12 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
   return TRUE;
 }
 
-void MainWindow::Button1_OnClick()
+void WmpMainWindow::Button1_OnClick()
 {
   MessageBox(m_hwnd, L"clicked", L"title", MB_OK);
 }
 
-void MainWindow::onCreate()
+void WmpMainWindow::onCreate()
 {
   //
   //按钮
@@ -90,7 +90,7 @@ void MainWindow::onCreate()
 /**
  * 画线
  */
-void MainWindow::onPaint()
+void WmpMainWindow::onPaint()
 {
   PAINTSTRUCT ps;
   HDC hdc = BeginPaint(m_hwnd, &ps);
@@ -103,7 +103,7 @@ void MainWindow::onPaint()
  */
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
 {
-  MainWindow win;
+  WmpMainWindow win;
 
   if (!win.Create(L"Learn to Program Windows", WS_OVERLAPPEDWINDOW))
   {

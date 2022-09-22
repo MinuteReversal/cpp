@@ -11,7 +11,6 @@
 #include <shobjidl.h>
 #include <windows.h>
 
-
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine,
                      int nCmdShow) {
   HRESULT hr =

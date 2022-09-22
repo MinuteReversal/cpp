@@ -1,24 +1,15 @@
 /*!
 *****************************************************************************
-* fileName    : Program.cpp
-* author      : 114233763@qq.com
-* date        : 2020-07-30 14:38:27
-* version     : v1
-* description :
-* https://docs.microsoft.com/en-us/windows/win32/wmp/hosting-the-windows-media-player-control-in-a-windows-application
-* https://stackoverflow.com/questions/1935964/basic-playback-with-programmatically-created-windows-media-player
-* https://blog.csdn.net/JUNGOU1/article/details/7481355
+fileName    : Program.cpp
+author      : 114233763@qq.com
+date        : 2020-07-30 14:38:27
+version     : v1
+description :
+https://docs.microsoft.com/en-us/windows/win32/wmp/hosting-the-windows-media-player-control-in-a-windows-application
 ***************************************************************************** */
 #ifndef UNICODE
 #define UNICODE
-#include <atlcomcli.h>
-#include <exception>
-#include <excpt.h>
-#include <minwindef.h>
 #include <stdlib.h>
-#include <windef.h>
-#include <winerror.h>
-#include <winuser.h>
 #endif
 
 #include "wmp.h"
@@ -26,17 +17,12 @@
 #include <atlcom.h>
 #include <atlctl.h>
 #include <atlhost.h>
-#include <stdexcept>
 #include <windows.h>
 
-HINSTANCE m_hInstance;        // application instance handle
-HWND m_hWnd;                  // video frame window
-CAxWindow m_wndView;          // ActiveX host window class.
-CComBSTR bstrVersionInfo;     // Contains the version string.
-CComPtr<IWMPPlayer> spPlayer; // Smart pointer to IWMPPlayer interface.
-CComPtr<IWMPControls> controls;
-CComPtr<IWMPPlaylist> playlist;
-CComPtr<IAxWinHostWindow> spHost;
+HINSTANCE m_hInstance;             // application instance handle
+HWND m_hWnd;                       // video frame window
+CAxWindow m_wndView;               // ActiveX host window class.
+CComPtr<IWMPPlayer> m_spWMPPlayer; // Smart pointer to IWMPPlayer interface.
 
 /**
  * @brief WindowProcedure
@@ -56,57 +42,19 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     break;
   }
   case WM_CREATE: {
-
-    // CoInitialize(NULL);
-    RECT rcClient = {0, 0, 400, 300};
-    HRESULT hr = S_OK;
-
-    // GetClientRect(m_hWnd, &rcClient);
-
-    if (FALSE == AtlAxWinInit()) {
-      MessageBox(hwnd, L"fail", L"error", MB_OK);
-    }
+    CComPtr<IAxWinHostWindow> spHost;
+    HRESULT hr;
+    RECT rcClient;
+    GetClientRect(hwnd, &rcClient);
+    AtlAxWinInit();
     m_wndView.Create(m_hWnd, rcClient, NULL,
                      WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
-    if (NULL == m_wndView.m_hWnd) {
-      throw std::exception("create error");
-    }
-    // hr = spPlayer.CoCreateInstance(__uuidof(WindowsMediaPlayer), 0,
-    //                                CLSCTX_INPROC_SERVER);
-
     hr = m_wndView.QueryHost(&spHost);
-
-    if (SUCCEEDED(hr)) {
-      hr = spHost->CreateControl(CComBSTR(__uuidof(WindowsMediaPlayer)),
-                                 m_wndView, 0);
-    }
-
-    if (SUCCEEDED(hr)) {
-      hr = m_wndView.QueryControl(&spPlayer);
-    }
-
-    if (SUCCEEDED(hr)) {
-      hr = spPlayer->get_versionInfo(&bstrVersionInfo);
-    }
-
-    if (SUCCEEDED(hr)) {
-      // Show the version in a message box.
-      COLE2T pStr(bstrVersionInfo);
-      MessageBox(NULL, pStr, _T("Windows Media Player Version"), MB_OK);
-      spPlayer->get_controls(&controls);
-      spPlayer->get_currentPlaylist(&playlist);
-
-      CComBSTR path("D:\\mp4\\bee.mp4");
-      spPlayer->put_URL(path);
-      controls->play();
-    }
-
+    hr = spHost->CreateControl(CComBSTR(_T("{6BF52A52-394A-11d3-B153-00C04F79FAA6}")), m_wndView, 0);
+    hr = m_wndView.QueryControl(&m_spWMPPlayer);
     break;
   }
   case WM_DESTROY:
-    // Clean up.
-    // spPlayer.Release();
-    // CoUninitialize();
     PostQuitMessage(0);
     break;
   case WM_PAINT: {
@@ -157,6 +105,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine, int nCmdShow) {
   RegisterClass(&wc);
 
   // Create the window.
+
   HWND hwnd =
       CreateWindowEx(0,                           // Optional window styles.
                      CLASS_NAME,                  // Window class

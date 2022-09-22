@@ -60,7 +60,7 @@
         "winmm.lib",
         "opengl32.lib",
         "glu32.lib",
-        "gdi32.lib",
+        "gdi32.lib"
       ],
       "problemMatcher": ["$msCompile"],
       "group": {
