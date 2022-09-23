@@ -8,6 +8,7 @@
 * https://docs.microsoft.com/en-us/windows/win32/wmp/hosting-the-windows-media-player-control-in-a-windows-application
 * https://stackoverflow.com/questions/1935964/basic-playback-with-programmatically-created-windows-media-player
 * https://blog.csdn.net/JUNGOU1/article/details/7481355
+* https://learn.microsoft.com/en-us/windows/win32/wmp/handling-events-in-c
 ***************************************************************************** */
 #ifndef UNICODE
 #define UNICODE
@@ -36,6 +37,8 @@ CComPtr<IWMPCore> core;
 CComPtr<IWMPMedia> media;
 CComPtr<IWMPSettings> settings;
 CComPtr<IAxWinHostWindow> spHost;
+CComPtr<IConnectionPoint>   m_spConnectionPoint;
+DWORD                       m_dwAdviseCookie;
 
 /**
  * @brief WindowProcedure
