@@ -64,9 +64,12 @@
       "args": [
         "/Zi",
         "/EHsc",
+        "/I",
+        "${fileDirname}",
         "/Fe:",
         "${fileDirname}\\${fileBasenameNoExtension}.exe",
-        "${file}"
+        "${file}",
+        "${fileDirname}\\*.cpp" //包含其他头文件依赖的cpp文件
       ],
       "problemMatcher": ["$msCompile"],
       "group": {

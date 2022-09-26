@@ -49,19 +49,19 @@
       "label": "C/C++: cl.exe build active file",
       "command": "cl.exe",
       "args": [
-        "/std:c++17",
         "/Zi",
         "/EHsc",
         "/Fe:",
         "${fileDirname}\\${fileBasenameNoExtension}.exe",
-        "${file}",
+        "${file}",                
         "user32.lib",
         "ole32.lib",
         "oleaut32.lib",
         "winmm.lib",
         "opengl32.lib",
         "glu32.lib",
-        "gdi32.lib"
+        "gdi32.lib",
+        "shlwapi.lib"
       ],
       "problemMatcher": ["$msCompile"],
       "group": {
