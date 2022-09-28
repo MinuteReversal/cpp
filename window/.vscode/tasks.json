@@ -79,6 +79,7 @@
       "args": [
         "/Zi",
         "/EHsc",
+        "/utf-8",
         "/Fe:",
         "${fileDirname}\\${fileBasenameNoExtension}.exe",
         "/I",

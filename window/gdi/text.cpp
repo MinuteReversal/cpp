@@ -7,8 +7,7 @@
 #include <windows.h>
 #include <winnt.h>
 
-
-//reference lib
+// reference lib
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "gdi32.lib")
 
@@ -42,7 +41,7 @@ void MainWindow::onPaint() {
   HDC hdc = BeginPaint(m_hwnd, &ps);
   FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
   wchar_t text[] = L"你好世界";
-  TextOut(hdc, 10, 10, text, ARRAYSIZE(text));
+  TextOut(hdc, 10, 10, text, ARRAYSIZE(text) - 1);
   EndPaint(m_hwnd, &ps);
 }
 
