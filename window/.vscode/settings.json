@@ -1,5 +1,7 @@
 {
   "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": true,
   "files.associations": {
     "thread": "cpp",
     "ostream": "cpp",
