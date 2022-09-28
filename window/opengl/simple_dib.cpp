@@ -6,19 +6,19 @@
 #ifndef UNICODE
 #define UNICODE
 #endif
-#include <windows.h>
+#include "base_opengl_window.h"
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <math.h>
-#include "base_opengl_window.h"
+#include <windows.h>
+
 
 #define IDT_TIMER1 1
 #if !defined(M_PI)
 #define M_PI 3.141592653F
 #endif
 
-enum StateEnum
-{
+enum StateEnum {
   NONE,
   PAN,    /* pan state bit */
   ROTATE, /* rotate state bits */
@@ -26,8 +26,7 @@ enum StateEnum
 };
 
 /* Struct used to manage color ramps */
-struct colorIndexState
-{
+struct colorIndexState {
   GLfloat amb[3];   /* ambient color / bottom of ramp */
   GLfloat diff[3];  /* diffuse color / middle of ramp */
   GLfloat spec[3];  /* specular color / top of ramp */
@@ -66,8 +65,7 @@ struct colorIndexState colors[] = {
     },
 };
 
-class MainWindow : public BaseOpenGLWindow<MainWindow>
-{
+class MainWindow : public BaseOpenGLWindow<MainWindow> {
 private:
   GLfloat rot[2];
   GLfloat trans[3]; /* current translation */
@@ -84,18 +82,15 @@ private:
 
 public:
   PCWSTR ClassName() const { return L"OpenGL"; }
-  void onResize(int width, int height)
-  {
+  void onResize(int width, int height) {
     setProjection();
     glViewport(0, 0, winWidth, winHeight);
   }
-  LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
-  {
+  LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     this->winWidth = LOWORD(lParam);
     this->winHeight = HIWORD(lParam);
 
-    switch (uMsg)
-    {
+    switch (uMsg) {
     case WM_CREATE:
       hDC = GetDC(m_hwnd);
       SetDCPixelFormat(hDC);
@@ -119,11 +114,11 @@ public:
       break;
     case WM_SIZE:
       /**
-       * 
+       *
        * <---------------DWORD--------------->
        * [00000000:00000000:00000000:00000000]
        * <-----HIWORD-----><------LOWORD----->
-       * 
+       *
        */
       onResize(this->winWidth, this->winHeight);
       PostMessage(m_hwnd, WM_PAINT, 0, 0);
@@ -139,28 +134,23 @@ public:
     return 0;
   }
 
-  void setProjection()
-  {
+  void setProjection() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     /*
     ** Preserve the aspect ratio of objects in the scene.
     */
-    if (winWidth > winHeight)
-    {
+    if (winWidth > winHeight) {
       GLfloat aspect = (GLfloat)winWidth / (GLfloat)winHeight;
       glFrustum(-0.5F * aspect, 0.5F * aspect, -0.5F, 0.5F, 1.0F, 3.0F);
-    }
-    else
-    {
+    } else {
       GLfloat aspect = (GLfloat)winHeight / (GLfloat)winWidth;
       glFrustum(-0.5F, 0.5F, -0.5F * aspect, 0.5F * aspect, 1.0F, 3.0F);
     }
     glMatrixMode(GL_MODELVIEW);
   }
 
-  void init()
-  {
+  void init() {
     GLfloat matShine = 20.00F;
     GLfloat light0Pos[4] = {0.70F, 0.70F, 1.25F, 0.00F};
 
@@ -177,14 +167,12 @@ public:
     glEnable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);
 
-    if (!this->colorIndexMode)
-    {
+    if (!this->colorIndexMode) {
       glEnable(GL_COLOR_MATERIAL);
     }
   }
 
-  void drawTorus()
-  {
+  void drawTorus() {
     int numMajor = 32;
     int numMinor = 24;
     float majorRadius = 0.6F;
@@ -193,8 +181,7 @@ public:
     double minorStep = 2.0F * M_PI / numMinor;
     int i, j;
 
-    for (i = 0; i < numMajor; ++i)
-    {
+    for (i = 0; i < numMajor; ++i) {
       double a0 = i * majorStep;
       double a1 = a0 + majorStep;
       GLfloat x0 = (GLfloat)cos(a0);
@@ -202,20 +189,16 @@ public:
       GLfloat x1 = (GLfloat)cos(a1);
       GLfloat y1 = (GLfloat)sin(a1);
 
-      if (i & 1)
-      {
+      if (i & 1) {
         glColor3fv(colors[0].diff);
         glMaterialiv(GL_FRONT, GL_COLOR_INDEXES, colors[0].indexes);
-      }
-      else
-      {
+      } else {
         glColor3fv(colors[1].diff);
         glMaterialiv(GL_FRONT, GL_COLOR_INDEXES, colors[1].indexes);
       }
 
       glBegin(GL_TRIANGLE_STRIP);
-      for (j = 0; j <= numMinor; ++j)
-      {
+      for (j = 0; j <= numMinor; ++j) {
         double b = j * minorStep;
         GLfloat c = (GLfloat)cos(b);
         GLfloat r = minorRadius * c + majorRadius;
@@ -231,8 +214,7 @@ public:
     }
   }
 
-  void doRedraw()
-  {
+  void doRedraw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glPushMatrix();
@@ -244,14 +226,11 @@ public:
 
     glPopMatrix();
 
-    if (renderToDIB)
-    {
+    if (renderToDIB) {
       glFinish();
       BitBlt(hDCFrontBuffer, 0, 0, winWidth, winHeight, hDC, 0, 0, SRCCOPY);
       GdiFlush();
-    }
-    else
-    {
+    } else {
       glFlush();
       SwapBuffers(hDC);
     }
@@ -267,19 +246,15 @@ public:
       z -= 360.0F;
   }
 
-  void OnPaint()
-  {
-    doRedraw();
-  }
+  void OnPaint() { doRedraw(); }
 };
 
-int APIENTRY
-WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine, int nCmdShow)
-{
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine,
+                     int nCmdShow) {
   MainWindow win;
 
-  if (!win.Create(L"Learn OpenGL", WS_OVERLAPPEDWINDOW, 0, CW_USEDEFAULT, CW_USEDEFAULT, 512, 512))
-  {
+  if (!win.Create(L"Learn OpenGL", WS_OVERLAPPEDWINDOW, 0, CW_USEDEFAULT,
+                  CW_USEDEFAULT, 512, 512)) {
     return 0;
   }
 
@@ -288,8 +263,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine, int nCmdShow)
   // Run the message loop.
 
   MSG msg = {};
-  while (GetMessage(&msg, NULL, 0, 0))
-  {
+  while (GetMessage(&msg, NULL, 0, 0)) {
     TranslateMessage(&msg);
     DispatchMessage(&msg);
   }

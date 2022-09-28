@@ -8,6 +8,7 @@
  * @copyright Copyright (c) 2022
  * https://learn.microsoft.com/en-us/windows/apps/desktop/modernize/using-the-xaml-hosting-api
  * https://github.com/microsoft/Xaml-Islands-Samples/tree/master/Samples/Win32
+ * https://learn.microsoft.com/en-us/windows/apps/desktop/modernize/xaml-islands
  */
 #include <shobjidl.h>
 #include <stdlib.h>
@@ -20,7 +21,6 @@
 #include <winrt/windows.ui.xaml.controls.h>
 #include <winrt/windows.ui.xaml.hosting.h>
 
-
 using namespace winrt;
 using namespace Windows::UI;
 using namespace Windows::UI::Composition;
@@ -32,7 +32,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine,
                       _In_ int nCmdShow) {
   winrt::init_apartment(winrt::apartment_type::single_threaded);
-
+  
   // The DesktopWindowXamlSource object creates the Xaml Island
   winrt::Windows::UI::Xaml::Hosting::DesktopWindowXamlSource desktopSource;
 

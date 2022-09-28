@@ -320,6 +320,9 @@ void UpdateUI(HWND hwnd, PlayerState state) {
   case Paused:
     bPlayback = TRUE;
     break;
+
+  default:
+    break;
   }
 
   HMENU hMenu = GetMenu(hwnd);
