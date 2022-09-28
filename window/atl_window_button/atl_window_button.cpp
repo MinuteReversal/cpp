@@ -6,30 +6,34 @@
 #include <winuser.h>
 
 #define IDC_MYATLWINDOWTEST 0x0001
-#define IDB_ONE 0x3301
+#define IDC_Button_1 0x3301
 
 class CMainWindow : public CWindowImpl<CMainWindow> {
+private:
+  HWND m_hButton1;
+
 public:
   BEGIN_MSG_MAP(CMainWindow)
-  COMMAND_ID_HANDLER(IDB_ONE, OnButton1Click)
+  COMMAND_ID_HANDLER(IDC_Button_1, OnButton1Click)
   MESSAGE_HANDLER(WM_CREATE, OnCreate)
   MESSAGE_HANDLER(WM_PAINT, OnPaint)
   MESSAGE_HANDLER(WM_DESTROY, OnDestory)
   END_MSG_MAP()
 
   LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled) {
-    HWND hwndButton = CreateWindow(
-        "BUTTON", // Predefined class; Unicode assumed
-        "OK",     // Button text
-        WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON, // Styles
-        0,                                                     // x position
-        0,                                                     // y position
-        100,                                                   // Button width
-        100,                                                   // Button height
-        m_hWnd,                                                // Parent window
-        (HMENU)IDB_ONE,                                        // No menu.
-        (HINSTANCE)GetWindowLongPtr(GWLP_HINSTANCE),
-        NULL); // Pointer not needed.
+    m_hButton1 = CreateWindow("BUTTON", // Predefined class; Unicode assumed
+                               "OK",     // Button text
+                               WS_TABSTOP | WS_VISIBLE | WS_CHILD |
+                                   BS_DEFPUSHBUTTON, // Styles
+                               0,                    // x position
+                               0,                    // y position
+                               120,                  // Button width
+                               30,                   // Button height
+                               m_hWnd,               // Parent window
+                               (HMENU)IDC_Button_1,  // No menu.
+                               (HINSTANCE)GetWindowLongPtr(GWLP_HINSTANCE),
+                               NULL); // Pointer not needed.
+
     return 0;
   }
 

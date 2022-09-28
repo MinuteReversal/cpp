@@ -36,6 +36,12 @@ add xxx.lib to `task.json`
 }
 ```
 
+# add reference static lib
+```cpp
+#pragma comment(lib, "user32.lib")
+#pragma comment(lib, "gdi32.lib")
+```
+
 # Naming and Numbering Convertions
 
 [Naming and Numbering Convertions](https://learn.microsoft.com/en-us/cpp/mfc/tn020-id-naming-and-numbering-conventions?view=msvc-170)
