@@ -14,14 +14,18 @@ add xxx.lib to `task.json`
     "/EHsc",
     "/Fe:",
     "${fileDirname}\\${fileBasenameNoExtension}.exe",
-    "${file}",
-    "user32.lib",//dialog
-    "ole32.lib",//
+    "/I",
+    "${fileDirname}",
+    "${fileDirname}\\*.cpp",
+    "/std:c++17",
+    "user32.lib",
+    "ole32.lib",
     "oleaut32.lib",
     "winmm.lib",
-    "opengl32.lib",//opengl
-    "glu32.lib",//gl utilitys
-    "gdi32.lib"//gdi
+    "opengl32.lib",
+    "glu32.lib",
+    "gdi32.lib",
+    "shlwapi.lib"
   ],
   "problemMatcher": ["$msCompile"],
   "group": {
