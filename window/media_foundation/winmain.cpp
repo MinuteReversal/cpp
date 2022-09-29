@@ -10,6 +10,19 @@
 
 #include "player.h"
 
+// https://learn.microsoft.com/en-us/windows/win32/medfound/media-foundation-headers-and-libraries
+#pragma comment(lib, "user32.lib")
+#pragma comment(lib, "ole32.lib")
+#pragma comment(lib, "oleaut32.lib")
+#pragma comment(lib, "kernel32.lib")
+#pragma comment(lib, "dxva2.lib")
+#pragma comment(lib, "evr.lib")
+#pragma comment(lib, "mf.lib")
+#pragma comment(lib, "mfplat.lib")
+#pragma comment(lib, "mfplay.lib")
+#pragma comment(lib, "mfreadwrite.lib")
+#pragma comment(lib, "mfuuid.lib")
+
 PCWSTR szTitle = L"BasicPlayback";
 PCWSTR szWindowClass = L"MFBASICPLAYBACK";
 

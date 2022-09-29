@@ -10,7 +10,7 @@
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
-      "externalConsole": false,
+      "console": "internalConsole",
       "preLaunchTask": "C/C++: cl.exe build active file"
     },
     {
@@ -22,7 +22,7 @@
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
-      "externalConsole": false,
+      "console": "internalConsole",
       "preLaunchTask": "C/C++: cl.exe build active single file"
     },
     {

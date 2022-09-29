@@ -1,7 +1,5 @@
 #include <atlbase.h>
 #include <atlwin.h>
-#include <minwindef.h>
-#include <windef.h>
 #include <windows.h>
 #include <winuser.h>
 

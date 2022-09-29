@@ -1,4 +1,4 @@
-//http://t.zoukankan.com/liangxiaofeng-p-5066026.html
+//[](http://t.zoukankan.com/liangxiaofeng-p-5066026.html)
 #include "atlbase.h"
 #include "atlwin.h"
 #include <minwindef.h>
