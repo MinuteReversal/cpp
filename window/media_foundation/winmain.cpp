@@ -22,7 +22,7 @@
 #pragma comment(lib, "mfplay.lib")
 #pragma comment(lib, "mfreadwrite.lib")
 #pragma comment(lib, "mfuuid.lib")
-#pragma comment(lib, "strmiids.lib")
+#pragma comment(lib, "strmiids.lib") //_MR_VIDEO_RENDER_SERVICE
 
 PCWSTR szTitle = L"BasicPlayback";
 PCWSTR szWindowClass = L"MFBASICPLAYBACK";
