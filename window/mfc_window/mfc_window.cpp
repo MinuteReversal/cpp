@@ -1,9 +1,8 @@
-// http://www.functionx.com/visualc/applications/simplewindow.htm
 #include <afxwin.h>
 
 class MainFrame : public CFrameWnd {
 public:
-  MainFrame() { Create(NULL, ""); }
+  MainFrame() { Create(NULL, "MFC"); }
 };
 
 class MainWindow : public CWinApp {
