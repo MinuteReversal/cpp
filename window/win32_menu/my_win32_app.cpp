@@ -77,6 +77,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     SetMenu(hwnd, hMenu);
   }
     return 0;
+  case WM_COMMAND: {
+    if (wParam == IDM_MENU_SUB) {
+      MessageBox(hwnd, L"your click sub menu", L"alert", MB_OK);
+    } else if (wParam == IDM_MENU_INSERT) {
+      MessageBox(hwnd, L"your click insert menu", L"alert", MB_OK);
+    }
+  }
+    return 0;
   case WM_DESTROY:
     PostQuitMessage(0);
     return 0;
