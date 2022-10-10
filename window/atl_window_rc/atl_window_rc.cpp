@@ -39,7 +39,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstace,
 
   wnd.Create(NULL, CWindow::rcDefault, _T("Learn to Program Windows"),
              WS_OVERLAPPEDWINDOW, WS_EX_CLIENTEDGE, hMenu);
-  wnd.SetIcon(hIcon);
   wnd.ShowWindow(nCmdShow);
   wnd.UpdateWindow();
 
