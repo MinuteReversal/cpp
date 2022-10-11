@@ -1,3 +1,3 @@
-#define IDI_MYICON 101
-#define IDR_MYMENU 0x0002
+#define IDR_MYMENU 101
+#define IDI_MYICON 201
 #define ID_FILE_EXIT 4001

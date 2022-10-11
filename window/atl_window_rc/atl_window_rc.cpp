@@ -1,9 +1,9 @@
 #include "resource.h"
+#include <afx.h>
 #include <atlbase.h>
 #include <atlwin.h>
 #include <windows.h>
 #include <winuser.h>
-
 
 class CMainWindow : public CWindowImpl<CMainWindow> {
 public:
@@ -39,6 +39,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstace,
 
   wnd.Create(NULL, CWindow::rcDefault, _T("Learn to Program Windows"),
              WS_OVERLAPPEDWINDOW, WS_EX_CLIENTEDGE, hMenu);
+  wnd.SetIcon(hIcon);
   wnd.ShowWindow(nCmdShow);
   wnd.UpdateWindow();
 
