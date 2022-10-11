@@ -5,7 +5,11 @@
 
 #include <windows.h>
 
+#pragma comment(lib,"user32.lib")
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+HWND hwnd;
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
@@ -22,10 +26,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 		// Create the window.
 
-		HWND hwnd = CreateWindowEx(
+		hwnd = CreateWindowEx(
 				0,                              // Optional window styles.
 				CLASS_NAME,                     // Window class
-				L"Learn to Program Windows",    // Window text
+				L"Learn Win32 To Program Windows",    // Window text
 				WS_OVERLAPPEDWINDOW,            // Window style
 
 				// Size and position
@@ -68,11 +72,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				{
 						PAINTSTRUCT ps;
 						HDC hdc = BeginPaint(hwnd, &ps);
-
-						// All painting occurs here, between BeginPaint and EndPaint.
-
 						FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
-
 						EndPaint(hwnd, &ps);
 				}
 				return 0;

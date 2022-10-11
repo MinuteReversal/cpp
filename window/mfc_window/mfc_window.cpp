@@ -2,7 +2,7 @@
 
 class MainFrame : public CFrameWnd {
 public:
-  MainFrame() { Create(NULL, "MFC"); }
+  MainFrame() { Create(NULL, "Learn MFC To Program Windows"); }
 };
 
 class MainWindow : public CWinApp {

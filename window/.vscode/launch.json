@@ -26,6 +26,18 @@
       "preLaunchTask": "C/C++: cl.exe build active single file"
     },
     {
+      "name": "C/C++: cl.exe build and debug active single file with resource file",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "console": "internalConsole",
+      "preLaunchTask": "C/C++: cl.exe build active file with resource file"
+    },
+    {
       "name": "g++ build and debug active file",
       "type": "cppdbg",
       "request": "launch",
