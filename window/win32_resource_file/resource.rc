@@ -1,0 +1,14 @@
+// https://stackoverflow.com/questions/4291526/how-do-i-link-a-rc-resource-file-when-compiling-a-win32-app-with-gcc-through
+BEGIN
+    "resource.h\0"
+END
+
+IDI_MYICON ICON "MFC.ico"
+
+IDR_MYMENU MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "E&xit", ID_FILE_EXIT
+    END
+END

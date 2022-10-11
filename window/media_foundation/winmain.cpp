@@ -236,7 +236,7 @@ void OnOpenURL(HWND hwnd) {
   // the memory for the string.
 
   OpenUrlDialogInfo url;
-  ZeroMemory(&url, sizeof(&url));
+  ZeroMemory(&url, sizeof(url));
 
   // Show the Open URL dialog.
   if (IDOK == DialogBoxParam(g_hInstance, MAKEINTRESOURCE(IDD_OPENURL), hwnd,
