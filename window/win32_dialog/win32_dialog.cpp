@@ -22,7 +22,7 @@ INT_PTR WINAPI DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 }
 
 HWND hwnd;
-HINSTANCE globalInstance;
+HINSTANCE g_hInstance;
 
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                       PWSTR pCmdLine, int nCmdShow) {
@@ -38,7 +38,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   RegisterClass(&wc);
 
   // Create the window.
-  globalInstance = hInstance;
+  g_hInstance = hInstance;
   hwnd = CreateWindow(            // Optional window styles.
       CLASS_NAME,                 // Window class
       "Learn to Program Windows", // Window text
@@ -90,7 +90,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     } else if (wParam == IDM_MENU_CONFIRM) {
       MessageBox(hwnd, "your click insert menu", "alert", MB_OKCANCEL);
     } else if (wParam == IDM_MENU_PROMPT) {
-      DialogBoxParam(globalInstance, MAKEINTRESOURCE(IDD_PROMPT), hwnd,
+      DialogBoxParam(g_hInstance, MAKEINTRESOURCE(IDD_PROMPT), hwnd,
                      DialogProc, lParam);
       DWORD err = GetLastError();
       if (err == ERROR_RESOURCE_DATA_NOT_FOUND) {

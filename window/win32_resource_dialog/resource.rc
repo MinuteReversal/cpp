@@ -1,5 +1,6 @@
 // https://stackoverflow.com/questions/4291526/how-do-i-link-a-rc-resource-file-when-compiling-a-win32-app-with-gcc-through
 
+#include "winuser.h"
 #include "resource.h"
 
 IDI_MYICON ICON "MFC.ico"
@@ -10,4 +11,19 @@ BEGIN
     BEGIN
         MENUITEM "E&xit", ID_FILE_EXIT
     END
+    POPUP "&Dialog"
+    BEGIN
+        MENUITEM "&Show", ID_MENU_SHOW
+        MENUITEM "&Hide", ID_MENU_HIDE
+    END
+END
+
+IDD_TOOLBAR DIALOGEX 0, 0, 98, 52
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "My Dialog Toobar"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON "&Press This Button",IDC_PRESS,7,7,84,14
+    PUSHBUTTON "&Or This One",IDC_OTHER,7,31,84,14
 END

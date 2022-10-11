@@ -9,7 +9,9 @@
 #endif
 
 #include "player.h"
+#include "winerror.h"
 #include "winuser.h"
+
 
 // https://learn.microsoft.com/en-us/windows/win32/medfound/media-foundation-headers-and-libraries
 #pragma comment(lib, "user32.lib")
@@ -242,7 +244,10 @@ void OnOpenURL(HWND hwnd) {
   if (IDOK == DialogBoxParam(g_hInstance, MAKEINTRESOURCE(IDD_OPENURL), hwnd,
                              OpenUrlDialogProc, (LPARAM)&url)) {
     // Open the file with the playback object.
-    hr = g_pPlayer->OpenURL(url.pszURL);
+    hr = g_pPlayer->OpenURL(url.pszURL);//D:\mp4\bee.mp4
+
+    // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-erref/705fb797-2175-4a90-b5a3-3918024b10b8?redirectedfrom=MSDN
+
     if (SUCCEEDED(hr)) {
       UpdateUI(hwnd, OpenPending);
     } else {
@@ -340,18 +345,11 @@ void UpdateUI(HWND hwnd, PlayerState state) {
     break;
   }
 
-  // HMENU hMenu = GetMenu(hwnd);
-  HMENU m_hMenubar = CreateMenu();
-  HMENU m_hMenu = CreateMenu();
+  HMENU hMenu = GetMenu(hwnd);
   UINT uEnable = MF_BYCOMMAND | (bWaiting ? MF_GRAYED : MF_ENABLED);
 
-  AppendMenu(m_hMenubar, MF_POPUP, (UINT_PTR)m_hMenu, L"Menu");
-  AppendMenu(m_hMenu, MF_STRING, (UINT_PTR)ID_FILE_OPENFILE, L"Open File");
-  AppendMenu(m_hMenu, MF_STRING, (UINT_PTR)ID_FILE_OPENURL, L"Open URL");
-  SetMenu(hwnd, m_hMenubar);
-
-  EnableMenuItem(m_hMenubar, ID_FILE_OPENFILE, uEnable);
-  EnableMenuItem(m_hMenubar, ID_FILE_OPENURL, uEnable);
+  EnableMenuItem(hMenu, ID_FILE_OPENFILE, uEnable);
+  EnableMenuItem(hMenu, ID_FILE_OPENURL, uEnable);
 
   if (bPlayback && g_pPlayer->HasVideo()) {
     g_bRepaintClient = FALSE;

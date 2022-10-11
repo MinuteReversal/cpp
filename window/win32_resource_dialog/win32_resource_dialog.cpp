@@ -6,8 +6,28 @@
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-HWND hwnd;
-HINSTANCE globalInstance;
+HWND hwnd = NULL;
+HINSTANCE g_hInstance = NULL;
+HWND g_hToolbar = NULL;
+
+INT_PTR CALLBACK ToolDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam,
+                             LPARAM lParam) {
+  switch (uMsg) {
+  case WM_COMMAND:
+    switch (LOWORD(wParam)) {
+    case IDC_PRESS:
+      MessageBox(hwnd, "Hi", "This is message", MB_OK | MB_ICONEXCLAMATION);
+      break;
+    case IDC_OTHER:
+      MessageBox(hwnd, "Bye!", "This is also a message",
+                 MB_OK | MB_ICONEXCLAMATION);
+      break;
+    }
+  default:
+    return FALSE;
+  }
+  return TRUE;
+}
 
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                       PWSTR pCmdLine, int nCmdShow) {
@@ -25,11 +45,11 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   RegisterClass(&wc);
 
   // Create the window.
-  globalInstance = hInstance;
-  hwnd = CreateWindow(     // Optional window styles.
-      CLASS_NAME,          // Window class
-      "Learn Win32 To Program Windows",             // Window text
-      WS_OVERLAPPEDWINDOW, // Window style
+  g_hInstance = hInstance;
+  hwnd = CreateWindow(                  // Optional window styles.
+      CLASS_NAME,                       // Window class
+      "Learn Win32 To Program Windows", // Window text
+      WS_OVERLAPPEDWINDOW,              // Window style
 
       // Size and position
       CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
@@ -60,16 +80,33 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                             LPARAM lParam) {
   switch (uMsg) {
-  case WM_COMMAND: {
-    if (wParam == ID_FILE_EXIT) {
+  case WM_COMMAND:
+    switch (wParam) {
+    case ID_FILE_EXIT:
       PostMessage(hwnd, WM_CLOSE, 0, 0);
+      break;
+    case ID_MENU_SHOW:
+      ShowWindow(g_hToolbar, SW_SHOW);
+      break;
+    case ID_MENU_HIDE:
+      ShowWindow(g_hToolbar, SW_HIDE);
+      break;
     }
-  } break;
+    break;
   case WM_CREATE:
+    g_hToolbar = CreateDialog(g_hInstance, MAKEINTRESOURCE(IDD_TOOLBAR), hwnd,
+                              ToolDlgProc);
+    if (g_hToolbar != NULL) {
+      ShowWindow(g_hToolbar, SW_SHOW);
+    } else {
+      MessageBox(hwnd, "CreateDialog returned NULL", "Warning!",
+                 MB_OK | MB_ICONINFORMATION);
+    }
     break;
   case WM_INITDIALOG:
     break;
   case WM_DESTROY:
+    DestroyWindow(g_hToolbar);
     PostQuitMessage(0);
     break;
   case WM_PAINT: {

@@ -1,0 +1,24 @@
+// https://stackoverflow.com/questions/4291526/how-do-i-link-a-rc-resource-file-when-compiling-a-win32-app-with-gcc-through
+
+#include "winuser.h"
+#include "resource.h"
+
+IDC_MFPLAYBACK MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "Open &File", ID_FILE_OPENFILE
+        MENUITEM "Open &Url", ID_FILE_OPENURL
+        MENUITEM "E&xit", IDM_EXIT
+    END
+END
+
+IDD_OPENURL DIALOGEX 0, 0, 98, 52
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_OVERLAPPEDWINDOW
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "My Dialog Toobar"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT IDC_EDIT_URL,7,7,84,14
+    PUSHBUTTON "&OK",IDOK,7,30,84,14    
+END
