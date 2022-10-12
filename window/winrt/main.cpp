@@ -1,7 +1,13 @@
 // https://learn.microsoft.com/en-us/windows/uwp/cpp-and-winrt-apis/get-started
 // https://github.com/microsoft/cppwinrt/issues/532
+#ifndef _SILENCE_CLANG_COROUTINE_MESSAGE
+#define _SILENCE_CLANG_COROUTINE_MESSAGE
+#include <winrt/Windows.Foundation.Collections.h>
+#endif
 
-#include "pch.h"
+#include <iostream>
+#include <string>
+#include <winrt/Windows.Web.Syndication.h>
 
 #pragma comment(lib, "ole32.lib")
 #pragma comment(lib, "oleaut32.lib")

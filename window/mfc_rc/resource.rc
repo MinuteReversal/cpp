@@ -1,0 +1,11 @@
+#include "resource.h"
+
+IDR_MAINFRAME ICON "MFC.ico"
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "E&xit", ID_FILE_EXIT
+    END
+END

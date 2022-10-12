@@ -1,0 +1,2 @@
+#define IDR_MAINFRAME 101
+#define ID_FILE_EXIT 4001

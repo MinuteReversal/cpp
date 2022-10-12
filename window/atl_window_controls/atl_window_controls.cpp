@@ -16,10 +16,10 @@ private:
 
 public:
   BEGIN_MSG_MAP(CMainWindow)
-  COMMAND_ID_HANDLER(IDC_Button1, OnButton1Click)
-  MESSAGE_HANDLER(WM_CREATE, OnCreate)
-  MESSAGE_HANDLER(WM_PAINT, OnPaint)
-  MESSAGE_HANDLER(WM_DESTROY, OnDestory)
+    COMMAND_ID_HANDLER(IDC_Button1, OnButton1Click)
+    MESSAGE_HANDLER(WM_CREATE, OnCreate)
+    MESSAGE_HANDLER(WM_PAINT, OnPaint)
+    MESSAGE_HANDLER(WM_DESTROY, OnDestory)
   END_MSG_MAP()
 
   LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled) {
