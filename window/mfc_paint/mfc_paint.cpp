@@ -1,17 +1,12 @@
-#include "resource.h"
-#include <afx.h>
 #include <afxext.h>
-#include <afxmsg_.h>
+#include <afxstr.h>
 #include <afxwin.h>
+#include <windef.h>
+#include <winnt.h>
 
 #pragma comment(linker, "/subsystem:windows")
 
 class MainFrame : public CFrameWnd {
-  DECLARE_DYNAMIC(MainFrame)
-public:
-  MainFrame() noexcept;
-  virtual ~MainFrame();
-
 public:
   DECLARE_MESSAGE_MAP()
   afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
@@ -23,7 +18,12 @@ ON_WM_CREATE()
 ON_WM_PAINT()
 END_MESSAGE_MAP()
 
-void MainFrame::OnPaint() { CPaintDC dc(this); }
+void MainFrame::OnPaint() {
+  CPaintDC dc(this);
+  char text[] = "Hello World";
+  CRect rect(0, 0, 0, 0);
+  dc.DrawText(text, ARRAYSIZE(text) - 1, rect, DT_SINGLELINE | DT_NOCLIP);
+}
 
 int MainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) { return 0; }
 

@@ -7,10 +7,7 @@
 #pragma comment(linker, "/subsystem:windows")
 
 class MainFrame : public CFrameWnd {
-  DECLARE_DYNAMIC(MainFrame)
-public:
-  MainFrame() noexcept;
-  virtual ~MainFrame();
+  // DECLARE_DYNAMIC(MainFrame)
 
 public:
   DECLARE_MESSAGE_MAP()
