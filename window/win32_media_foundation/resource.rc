@@ -1,24 +1,53 @@
-// https://stackoverflow.com/questions/4291526/how-do-i-link-a-rc-resource-file-when-compiling-a-win32-app-with-gcc-through
-
-#include "winuser.h"
+// Microsoft Visual C++ generated resource script.
+//
 #include "resource.h"
 
-IDC_MFPLAYBACK MENU
+#include "windows.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDC_MFPLAYBACK MENU 
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "Open &File", ID_FILE_OPENFILE
-        MENUITEM "Open &Url", ID_FILE_OPENURL
-        MENUITEM "E&xit", IDM_EXIT
+        MENUITEM "&Open File",                  ID_FILE_OPENFILE
+        MENUITEM "Open &Url",                   ID_FILE_OPENURL
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       IDM_EXIT
     END
 END
 
-IDD_OPENURL DIALOGEX 0, 0, 98, 52
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_OVERLAPPEDWINDOW
-EXSTYLE WS_EX_TOOLWINDOW
-CAPTION "My Dialog Toobar"
-FONT 8, "MS Sans Serif"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_OPENURL DIALOGEX 0, 0, 186, 90
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Open URL"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    EDITTEXT IDC_EDIT_URL,7,7,84,14
-    PUSHBUTTON "&OK",IDOK,7,30,84,14    
+    DEFPUSHBUTTON   "OK",IDOK,75,69,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,69,50,14
+    EDITTEXT        IDC_EDIT_URL,7,21,172,14,ES_AUTOHSCROLL
+    LTEXT           "Enter the URL to open:",IDC_STATIC,7,7,104,8
 END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
