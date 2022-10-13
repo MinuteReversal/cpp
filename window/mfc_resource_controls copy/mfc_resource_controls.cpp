@@ -18,7 +18,7 @@ public:
 BEGIN_MESSAGE_MAP(MainFrame, CFrameWnd)
 ON_WM_CREATE()
 ON_WM_PAINT()
-ON_COMMAND(IDC_BUTTON_1, &MainFrame::OnButton1Click)
+ON_COMMAND(IDC_BUTTON_1, &MainFrame::OnButton1_Click)
 
 END_MESSAGE_MAP()
 
