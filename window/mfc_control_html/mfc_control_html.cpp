@@ -1,7 +1,6 @@
 // https://stackoverflow.com/questions/60183665/mfc-using-chtmlview-with-memory-string-via-about-or-data
 #include <afxext.h>
 #include <afxhtml.h>
-#include <afxstr.h>
 #include <afxwin.h>
 
 #pragma comment(linker, "/subsystem:windows")
@@ -70,11 +69,6 @@ int MainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   IHTMLDocument2 *pDocument;
   browser.GetDHtmlDocument(&pDocument);
 
-  CString html = "";
-  int charsize = sizeof(html.GetAt(0));
-  IStream *istream =
-      SHCreateMemStream(reinterpret_cast<const BYTE *>(html.GetBuffer()),
-                        charsize * html.GetLength());
 
   BSTR bstr = SysAllocString(OLESTR("<p>Hello World!</p>"));
   // Creates a new one-dimensional array
