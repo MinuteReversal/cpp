@@ -1,8 +1,9 @@
-#include "resource.h"
 #include <afxext.h>
 #include <afxwin.h>
 
 #pragma comment(linker, "/subsystem:windows")
+
+#define IDC_BUTTON1 4001
 
 class MainFrame : public CFrameWnd {
 protected:
@@ -18,7 +19,7 @@ public:
 BEGIN_MESSAGE_MAP(MainFrame, CFrameWnd)
 ON_WM_CREATE()
 ON_WM_PAINT()
-ON_COMMAND(IDC_BUTTON_1, &MainFrame::OnButton1_Click)
+ON_COMMAND(IDC_BUTTON1, &MainFrame::OnButton1Click)
 
 END_MESSAGE_MAP()
 
@@ -26,12 +27,12 @@ void MainFrame::OnPaint() { CPaintDC dc(this); }
 
 int MainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   button1.Create("button1", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                 CRect(0, 0, 120, 30), this, IDC_BUTTON_1);
+                 CRect(0, 0, 120, 30), this, IDC_BUTTON1);
   return 0;
 }
+
 void MainFrame::OnButton1Click() {
   MessageBox("button1 clicked", "", MB_OK);
-  PostMessage(IDC_BUTTON_2);
 }
 
 class MainWindow : public CWinApp {
@@ -42,7 +43,7 @@ public:
   virtual BOOL InitInstance() {
     frame = new MainFrame();
     m_pMainWnd = frame;
-    frame->LoadFrame(IDR_MAINFRAME);
+    frame->Create(NULL, "");
     frame->ShowWindow(SW_SHOW);
     frame->UpdateWindow();
 
