@@ -9,7 +9,7 @@
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-HWND hwnd;
+HWND hWnd;
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
@@ -26,7 +26,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 		// Create the window.
 
-		hwnd = CreateWindowEx(
+		hWnd = CreateWindowEx(
 				0,                              // Optional window styles.
 				CLASS_NAME,                     // Window class
 				L"Learn Win32 To Program Windows",    // Window text
@@ -41,12 +41,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 				NULL        // Additional application data
 				);
 
-		if (hwnd == NULL)
+		if (hWnd == NULL)
 		{
 				return 0;
 		}
 
-		ShowWindow(hwnd, nCmdShow);
+		ShowWindow(hWnd, nCmdShow);
 
 		// Run the message loop.
 
