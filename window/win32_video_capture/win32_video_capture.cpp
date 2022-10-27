@@ -18,11 +18,8 @@
 #include <mmreg.h>
 #include <msacm.h>
 #include <timeapi.h>
-#include <wingdi.h>
-
 
 #pragma comment(lib, "user32.lib")
-#pragma comment(lib, "gdi32.lib")
 #pragma comment(lib, "vfw32.lib")
 // clang-format on
 
@@ -31,14 +28,13 @@
 #define IDM_MENU_CONNECT 40002
 #define IDM_MENU_DISCONNECT 40003
 #define IDM_MENU_CAPTURE 40004
+#define IDM_MENU_SAVE 40005
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-HINSTANCE g_hInstance;
-HWND hWnd;
-HBITMAP hBitmap = NULL;
+HINSTANCE g_hInstance = NULL;
+HWND hWnd = NULL;
 HWND hWndC = NULL;
-HRESULT hIsConnected = NULL;
 
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                       PWSTR pCmdLine, int nCmdShow) {
@@ -92,6 +88,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
                             LPARAM lParam) {
   switch (uMsg) {
   case WM_CREATE: {
+    // create menu
     HMENU hMenu = CreateMenu();
     HMENU hSubMenu = CreateMenu();
     HMENU hDeviceMenu = CreateMenu();
@@ -103,6 +100,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
                TEXT("Connect"));
     AppendMenu(hSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_DISCONNECT,
                TEXT("Disconnect"));
+    AppendMenu(hSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_SAVE, TEXT("Save"));
 
     AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hDeviceMenu, TEXT("Device"));
 
@@ -119,29 +117,38 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
       }
     }
     SetMenu(hWnd, hMenu);
+
+    // create preview window
+    RECT clientRect;
+    GetClientRect(hWnd, &clientRect);
+    hWndC = capCreateCaptureWindow(
+        TEXT("My Capture Window"), WS_CHILD | WS_VISIBLE, 0, 0,
+        clientRect.right - clientRect.left, clientRect.bottom - clientRect.top,
+        hWnd, IDC_CAPTURE_WINDOW);
   }
   case WM_COMMAND: {
     if (wParam == IDM_MENU_CONNECT) {
       // hIsConnected = SendMessage(hWndC, WM_CAP_DRIVER_CONNECT, 0, 0L);
       // Or, use the macro to connect to the MSVIDEO driver:
       assert(NULL != hWndC);
-      hIsConnected = capDriverConnect(hWndC, 0);
+      capDriverConnect(hWndC, 0);
       capPreviewRate(hWndC, 60);
       capPreview(hWndC, TRUE);
     } else if (wParam == IDM_MENU_DISCONNECT) {
       assert(NULL != hWndC);
       capPreview(hWndC, FALSE);
       capDriverDisconnect(hWndC);
-      hIsConnected = NULL;
     } else if (wParam == IDM_MENU_CAPTURE) {
-      if (hWndC == NULL) {
-        RECT clientRect;
-        GetClientRect(hWnd, &clientRect);
-        hWndC = capCreateCaptureWindow(
-            TEXT("My Capture Window"), WS_CHILD | WS_VISIBLE, 0, 0,
-            clientRect.right - clientRect.left,
-            clientRect.bottom - clientRect.top, hWnd, IDC_CAPTURE_WINDOW);
-      }
+      assert(NULL != hWndC);
+      char szCaptureFile[] = "MYCAP.AVI";
+      capFileSetCaptureFile(hWndC, szCaptureFile);
+      capFileAlloc(hWndC, (1024L * 1024L * 5));
+      // capFileSaveAs(hWndC, szCaptureFile);
+    } else if (wParam == IDM_MENU_SAVE) {
+      assert(NULL != hWndC);
+      char szCaptureFile[] = "MYCAP.AVI";
+      capCaptureSequence(hWndC);
+      capFileSaveAs(hWndC, szCaptureFile);
     }
   }
     return 0;

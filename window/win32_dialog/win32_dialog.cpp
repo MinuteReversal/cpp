@@ -1,12 +1,22 @@
+// https://learn.microsoft.com/en-us/windows/win32/dlgbox/dialog-box-types
+// https://learn.microsoft.com/en-us/windows/win32/menurc/dialogex-resource?source=recommendations
+// clang-format off
 #include <windows.h>
 #include <winuser.h>
+#include <commdlg.h>
+
 
 #pragma comment(lib, "user32.lib")
+#pragma comment(lib, "ComDlg32.Lib")
+// clang-format on
 
 #define IDM_MENU_MAIN 40001
 #define IDM_MENU_ALERT 40002
 #define IDM_MENU_CONFIRM 40003
 #define IDM_MENU_PROMPT 40004
+#define IDM_MENU_OPEN 40005
+#define IDM_MENU_SAVE 40006
+#define IDM_MENU_COLOR 40007
 #define IDD_PROMPT 50001
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -81,21 +91,67 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_ALERT, "Alert");
     AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_CONFIRM, "Confirm");
     AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_PROMPT, "Prompt");
+    AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_OPEN, "Open File");
+    AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_SAVE, "Save File");
+    AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_COLOR, "Color");
+
     SetMenu(hwnd, hMenu);
   }
     return 0;
   case WM_COMMAND: {
-    if (wParam == IDM_MENU_ALERT) {
+    if (IDM_MENU_ALERT == wParam) {
       MessageBox(hwnd, "your click sub menu", "alert", MB_OK);
-    } else if (wParam == IDM_MENU_CONFIRM) {
+    } else if (IDM_MENU_CONFIRM == wParam) {
       MessageBox(hwnd, "your click insert menu", "alert", MB_OKCANCEL);
-    } else if (wParam == IDM_MENU_PROMPT) {
-      DialogBoxParam(g_hInstance, MAKEINTRESOURCE(IDD_PROMPT), hwnd,
-                     DialogProc, lParam);
+    } else if (IDM_MENU_PROMPT == wParam) {
+      DialogBoxParam(g_hInstance, MAKEINTRESOURCE(IDD_PROMPT), hwnd, DialogProc,
+                     lParam);
       DWORD err = GetLastError();
       if (err == ERROR_RESOURCE_DATA_NOT_FOUND) {
         MessageBox(hwnd, "ERROR_RESOURCE_DATA_NOT_FOUND", "error",
                    MB_OK | MB_ICONERROR);
+      }
+    } else if (IDM_MENU_OPEN == wParam) {
+      // https://github.com/microsoft/Windows-classic-samples/blob/main/Samples/Win7Samples/winui/shell/appplatform/fileisinuse/fileisinusesample.cpp
+      char szPath[MAX_PATH] = {};
+      OPENFILENAME ofn = {sizeof(ofn)}; // common dialog box structure
+      ofn.hwndOwner = hwnd;
+      ofn.lpstrFilter = "All Files\0*.*\0";
+      ofn.lpstrFile = szPath;
+      ofn.nMaxFile = ARRAYSIZE(szPath);
+
+      BOOL fOk = GetOpenFileName(&ofn);
+      if (fOk) {
+        // Open the file that was selected in
+        // the Open File dialog
+      }
+
+    } else if (IDM_MENU_SAVE == wParam) {
+      char szPath[MAX_PATH] = {};
+      OPENFILENAME ofn = {sizeof(ofn)}; // common dialog box structure
+      ofn.hwndOwner = hwnd;
+      ofn.lpstrFilter = "All Files\0*.*\0";
+      ofn.lpstrFile = szPath;
+      ofn.nMaxFile = ARRAYSIZE(szPath);
+
+      BOOL fOk = GetSaveFileName(&ofn);
+      if (fOk) {
+        // Open the file that was selected in
+        // the Open File dialog
+      }
+    } else if (IDM_MENU_COLOR == wParam) {
+      // https://learn.microsoft.com/en-us/windows/win32/dlgbox/color-dialog-box
+      // http://winapi.freetechsecrets.com/win32/WIN32Choosing_a_Color.htm
+      COLORREF acrCustClr[16]; // array of custom colors
+      CHOOSECOLOR cc = {sizeof(cc)};
+      ZeroMemory(&cc, sizeof(CHOOSECOLOR));
+      cc.lStructSize = sizeof(CHOOSECOLOR);
+      cc.hwndOwner = hwnd;
+      cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+      cc.lpCustColors = (LPDWORD) acrCustClr;
+
+      BOOL fOk = ChooseColor(&cc);
+      if (fOk) {
       }
     }
   }
