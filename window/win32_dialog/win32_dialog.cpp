@@ -17,6 +17,11 @@
 #define IDM_MENU_OPEN 40005
 #define IDM_MENU_SAVE 40006
 #define IDM_MENU_COLOR 40007
+#define IDM_MENU_FIND 40008
+#define IDM_MENU_FONT 40009
+#define IDM_MENU_PAGE_SETUP 40010
+#define IDM_MENU_PRINT 40011
+#define IDM_MENU_REPLACE 40012
 #define IDD_PROMPT 50001
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -94,6 +99,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_OPEN, "Open File");
     AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_SAVE, "Save File");
     AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_COLOR, "Color");
+    AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_FIND, "Find");
+    AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_REPLACE, "Replace");
+    AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_FONT, "Font");
+    AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_PAGE_SETUP,
+               "Page Setup");
+    AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_PRINT, "Print");
 
     SetMenu(hwnd, hMenu);
   }
@@ -148,16 +159,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
       cc.lStructSize = sizeof(CHOOSECOLOR);
       cc.hwndOwner = hwnd;
       cc.Flags = CC_FULLOPEN | CC_RGBINIT;
-      cc.lpCustColors = (LPDWORD) acrCustClr;
+      cc.lpCustColors = (LPDWORD)acrCustClr;
 
       BOOL fOk = ChooseColor(&cc);
       if (fOk) {
       }
+    } else if (IDM_MENU_FIND == wParam) {
     }
   }
     return 0;
   case WM_INITDIALOG:
-
     return 0;
   case WM_DESTROY:
     PostQuitMessage(0);
@@ -166,11 +177,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
   case WM_PAINT: {
     PAINTSTRUCT ps;
     HDC hdc = BeginPaint(hwnd, &ps);
-
-    // All painting occurs here, between BeginPaint and EndPaint.
-
     FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-
     EndPaint(hwnd, &ps);
   }
     return 0;
