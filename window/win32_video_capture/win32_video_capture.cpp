@@ -2,21 +2,21 @@
 // https://learn.microsoft.com/en-us/windows/win32/multimedia/windows-multimedia-start-page?source=recommendations
 // https://learn.microsoft.com/en-us/windows/win32/multimedia/windows-multimedia-start-page
 // https://learn.microsoft.com/en-us/previous-versions/ms713463(v=vs.85)
+// https://www.cnblogs.com/ciano/p/3446417.html
+// clang-format off
 #ifndef UNICODE
 #define UNICODE
-
-#include <corecrt_wstring.h>
 #endif
-
 #include <windows.h>
-#include <Digitalv.h>
+#include <cassert>
+#include <digitalv.h>
 #include <vfw.h>
 #include <joystickapi.h>
 #include <mmddk.h>
 #include <mmeapi.h>
 #include <mmiscapi.h>
 #include <mmreg.h>
-#include <MSAcm.h>
+#include <msacm.h>
 #include <timeapi.h>
 #include <wingdi.h>
 
@@ -24,21 +24,25 @@
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "gdi32.lib")
 #pragma comment(lib, "vfw32.lib")
+// clang-format on
 
 #define IDC_CAPTURE_WINDOW 109
 #define IDM_MENU_MAIN 40001
-#define IDM_MENU_SCREENSHOT 40002
-#define IDM_MENU_REFRESH 40003
-#define IDM_MENU_SET_VIDEO 40004
+#define IDM_MENU_CONNECT 40002
+#define IDM_MENU_DISCONNECT 40003
+#define IDM_MENU_CAPTURE 40004
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+HINSTANCE g_hInstance;
 HWND hWnd;
 HBITMAP hBitmap = NULL;
-HWND hWndC=NULL;
+HWND hWndC = NULL;
+HRESULT hIsConnected = NULL;
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-                    PWSTR pCmdLine, int nCmdShow) {
+int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+                      PWSTR pCmdLine, int nCmdShow) {
+  g_hInstance = hInstance;
   // Register the window class.
   const wchar_t CLASS_NAME[] = L"Sample Window Class";
 
@@ -93,26 +97,14 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
     HMENU hDeviceMenu = CreateMenu();
 
     AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hSubMenu, TEXT("Menu"));
-    AppendMenu(hSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_SCREENSHOT,
-               TEXT("capture"));
-    AppendMenu(hSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_REFRESH,
-               TEXT("Refresh"));
-    AppendMenu(hSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_SET_VIDEO,
-               TEXT("Set Video Charateristics"));
+    AppendMenu(hSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_CAPTURE,
+               TEXT("Capture"));
+    AppendMenu(hSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_CONNECT,
+               TEXT("Connect"));
+    AppendMenu(hSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_DISCONNECT,
+               TEXT("Disconnect"));
 
     AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hDeviceMenu, TEXT("Device"));
-
-    hWndC = capCreateCaptureWindow(TEXT("My Capture Window"),
-                                    WS_CHILD | WS_VISIBLE, 0, 0, 160, 120,
-                                    hWnd, IDC_CAPTURE_WINDOW);
-    LRESULT fOK = SendMessage (hWndC, WM_CAP_DRIVER_CONNECT, 0, 0L); 
-      // 
-      // Or, use the macro to connect to the MSVIDEO driver: 
-      // fOK = capDriverConnect(hWndC, 0); 
-      // 
-      // Place code to set up and capture video here. 
-      // 
-      // capDriverDisconnect (hWndC); 
 
     wchar_t szDeviceName[80];
     wchar_t szDeviceVersion[80];
@@ -122,72 +114,34 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
                                   szDeviceVersion, sizeof(szDeviceVersion))) {
         // Append name to list of installed capture drivers
         // and then let the user select a driver to use.
-            AppendMenu(hDeviceMenu, MF_STRING, (UINT_PTR)9000+wIndex,
-                szDeviceName);
+        AppendMenu(hDeviceMenu, MF_STRING, (UINT_PTR)9000 + wIndex,
+                   szDeviceName);
       }
     }
-
     SetMenu(hWnd, hMenu);
   }
   case WM_COMMAND: {
-    if (wParam == IDM_MENU_SCREENSHOT) {
-      // https://stackoverflow.com/questions/3291167/how-can-i-take-a-screenshot-in-a-windows-application
-
-
-      capPreviewRate(hWndC, 66); // rate, in milliseconds
-      capPreview(hWndC, TRUE);   // starts preview
-
-      // Preview
-
+    if (wParam == IDM_MENU_CONNECT) {
+      // hIsConnected = SendMessage(hWndC, WM_CAP_DRIVER_CONNECT, 0, 0L);
+      // Or, use the macro to connect to the MSVIDEO driver:
+      assert(NULL != hWndC);
+      hIsConnected = capDriverConnect(hWndC, 0);
+      capPreviewRate(hWndC, 60);
+      capPreview(hWndC, TRUE);
+    } else if (wParam == IDM_MENU_DISCONNECT) {
+      assert(NULL != hWndC);
       capPreview(hWndC, FALSE);
-      //InvalidateRect(hWnd, NULL, FALSE);
-    } else if (wParam == IDM_MENU_SET_VIDEO) {
-      
-      HWND hWndC = capCreateCaptureWindow(TEXT("My Capture Window"),
-    WS_CHILD | WS_VISIBLE, 0, 0, 160, 120, hWnd, IDC_CAPTURE_WINDOW);
-
-    CAPDRIVERCAPS CapDriverCaps = { }; 
-    CAPSTATUS     CapStatus = { };
-
-    capDriverGetCaps(hWndC, &CapDriverCaps, sizeof(CAPDRIVERCAPS)); 
-    
-    // Video source dialog box. 
-    if (CapDriverCaps.fHasDlgVideoSource)
-    {
-        capDlgVideoSource(hWndC); 
-    }
-    
-    // Video format dialog box. 
-    if (CapDriverCaps.fHasDlgVideoFormat) 
-    {
-        capDlgVideoFormat(hWndC); 
-
-        // Are there new image dimensions?
-        capGetStatus(hWndC, &CapStatus, sizeof (CAPSTATUS));
-
-        // If so, notify the parent of a size change.
-    } 
-    
-    // Video display dialog box. 
-    if (CapDriverCaps.fHasDlgVideoDisplay)
-    {
-        capDlgVideoDisplay(hWndC); 
-    }
-
-    CAPDRIVERCAPS CapDrvCaps; 
-
-capDriverGetCaps(hWndC, &CapDrvCaps, sizeof (CAPDRIVERCAPS)); 
-
-if (CapDrvCaps.fHasOverlay) 
-    capOverlay(hWndC, TRUE);
-
-    }
-    else if (wParam == IDM_MENU_REFRESH) {
-      // https://stackoverflow.com/questions/22277773/win32-content-changed-but-doesnt-show-update-unless-window-is-moved
-      InvalidateRect(hWnd, NULL, FALSE);
-    }
-    else if(wParam==9000){
-      SendMessage (hWndC, WM_CAP_DRIVER_CONNECT, 0, 0L); 
+      capDriverDisconnect(hWndC);
+      hIsConnected = NULL;
+    } else if (wParam == IDM_MENU_CAPTURE) {
+      if (hWndC == NULL) {
+        RECT clientRect;
+        GetClientRect(hWnd, &clientRect);
+        hWndC = capCreateCaptureWindow(
+            TEXT("My Capture Window"), WS_CHILD | WS_VISIBLE, 0, 0,
+            clientRect.right - clientRect.left,
+            clientRect.bottom - clientRect.top, hWnd, IDC_CAPTURE_WINDOW);
+      }
     }
   }
     return 0;
@@ -199,13 +153,6 @@ if (CapDrvCaps.fHasOverlay)
     PAINTSTRUCT ps;
     HDC hdc = BeginPaint(hWnd, &ps);
     FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-
-    if (hBitmap != NULL) {
-      // https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-createpatternbrush
-      HBRUSH pb = CreatePatternBrush(hBitmap);
-      FillRect(hdc, &ps.rcPaint, pb);
-    }
-
     EndPaint(hWnd, &ps);
   }
     return 0;
