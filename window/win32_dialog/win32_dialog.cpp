@@ -1,10 +1,10 @@
 // https://learn.microsoft.com/en-us/windows/win32/dlgbox/dialog-box-types
 // https://learn.microsoft.com/en-us/windows/win32/menurc/dialogex-resource?source=recommendations
+
 // clang-format off
 #include <windows.h>
+#include <winnt.h>
 #include <winuser.h>
-#include <commdlg.h>
-
 
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "ComDlg32.Lib")
@@ -22,7 +22,13 @@
 #define IDM_MENU_PAGE_SETUP 40010
 #define IDM_MENU_PRINT 40011
 #define IDM_MENU_REPLACE 40012
+#define IDM_MENU_EXIT 40013
 #define IDD_PROMPT 50001
+
+HWND hwnd;
+HINSTANCE g_hInstance;
+UINT uFindReplaceMsg; // message identifier for FINDMSGSTRING
+HWND hDlg = NULL;     // handle of Find dialog box
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -36,8 +42,35 @@ INT_PTR WINAPI DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
   return TRUE;
 }
 
-HWND hwnd;
-HINSTANCE g_hInstance;
+void SearchFile(char *findWhat, BOOL isDown, BOOL isMatchCase) {}
+
+UINT_PTR CALLBACK LpfrHookProc(HWND hwnd, UINT uMsg, WPARAM wParam,
+                               LPARAM lParam) {
+  switch (uMsg) {
+  case WM_INITDIALOG:
+    ShowWindow(hDlg, SW_SHOWNORMAL);
+    UpdateWindow(hDlg);
+    break;
+  }
+  if (uMsg == uFindReplaceMsg) {
+    // Get pointer to FINDREPLACE structure from lParam.
+    LPFINDREPLACE lpfr = (LPFINDREPLACE)lParam;
+    // If the FR_DIALOGTERM flag is set,
+    // invalidate the handle identifying the dialog box.
+    if (lpfr->Flags & FR_DIALOGTERM) {
+      hDlg = NULL;
+      return 0;
+    }
+    // If the FR_FINDNEXT flag is set,
+    // call the application-defined search routine
+    // to search for the requested string.
+    if (lpfr->Flags & FR_FINDNEXT)
+      SearchFile(lpfr->lpstrFindWhat, (BOOL)(lpfr->Flags & FR_DOWN),
+                 (BOOL)(lpfr->Flags & FR_MATCHCASE));
+    return 0;
+  }
+  return TRUE;
+}
 
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                       PWSTR pCmdLine, int nCmdShow) {
@@ -77,9 +110,11 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   // Run the message loop.
 
   MSG msg = {};
-  while (GetMessage(&msg, NULL, 0, 0) > 0) {
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
+  while (GetMessage(&msg, NULL, 0, 0)) {
+    if (!IsDialogMessage(hDlg, &msg)) {
+      TranslateMessage(&msg);
+      DispatchMessage(&msg);
+    }
   }
 
   return 0;
@@ -105,6 +140,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_PAGE_SETUP,
                "Page Setup");
     AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_PRINT, "Print");
+    AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_EXIT, "Exit");
 
     SetMenu(hwnd, hMenu);
   }
@@ -153,9 +189,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     } else if (IDM_MENU_COLOR == wParam) {
       // https://learn.microsoft.com/en-us/windows/win32/dlgbox/color-dialog-box
       // http://winapi.freetechsecrets.com/win32/WIN32Choosing_a_Color.htm
+      // https://learn.microsoft.com/zh-cn/windows/win32/dlgbox/using-common-dialog-boxes
       COLORREF acrCustClr[16]; // array of custom colors
       CHOOSECOLOR cc = {sizeof(cc)};
-      ZeroMemory(&cc, sizeof(CHOOSECOLOR));
       cc.lStructSize = sizeof(CHOOSECOLOR);
       cc.hwndOwner = hwnd;
       cc.Flags = CC_FULLOPEN | CC_RGBINIT;
@@ -165,15 +201,72 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
       if (fOk) {
       }
     } else if (IDM_MENU_FIND == wParam) {
+      // https://learn.microsoft.com/zh-cn/windows/win32/dlgbox/find-and-replace-dialog-boxes
+      // http://winapi.freetechsecrets.com/win32/WIN32Finding_Text.htm
+      // https://cplusplus.com/forum/windows/106496/
+      FINDREPLACE fr; // common dialog box structure
+
+      char szFindWhat[80] = {'\0'}; // buffer receiving string
+
+      ZeroMemory(&fr, sizeof(fr));
+      fr.lStructSize = sizeof(fr);
+      fr.hwndOwner = hwnd;
+      fr.lpstrFindWhat = szFindWhat;
+      fr.wFindWhatLen = 80;
+      fr.Flags = 0; // FR_ENABLEHOOK;
+      // fr.lpfnHook = LpfrHookProc;
+
+      uFindReplaceMsg = RegisterWindowMessage(FINDMSGSTRING);
+      hDlg = FindText(&fr);
+      if (hDlg == NULL) {
+        MessageBox(hwnd, "Create Error", "error", MB_OK);
+      }
+
+    } else if (IDM_MENU_REPLACE == wParam) {
+      FINDREPLACE fr = {sizeof(fr)};
+
+      char szFindWhat[80] = {'\0'};
+      char szReplaceWith[80] = {'\0'};
+
+      ZeroMemory(&fr, sizeof(fr));
+      fr.lStructSize = sizeof(FINDREPLACE);
+      fr.hwndOwner = hwnd;
+      fr.Flags = 0;
+      fr.lpstrFindWhat = szFindWhat;
+      fr.wFindWhatLen = 80;
+      fr.lpstrReplaceWith = szReplaceWith;
+      fr.wReplaceWithLen = 80;
+
+      uFindReplaceMsg = RegisterWindowMessage(FINDMSGSTRING);
+      hDlg = ReplaceText(&fr);
+      if (hDlg == NULL) {
+        MessageBox(hwnd, "Create Error", "error", MB_OK);
+      }
+
+    } else if (IDM_MENU_FONT == wParam) {
+      CHOOSEFONT cf = {sizeof(cf)};
+      cf.hwndOwner = hwnd;
+      BOOL fOk = ChooseFont(&cf);
+      if (fOk) {
+      }
+    } else if (IDM_MENU_PAGE_SETUP == wParam) {
+      PAGESETUPDLG psd = {sizeof(psd)};
+      psd.hwndOwner = hwnd;
+      PageSetupDlg(&psd);
+    } else if (IDM_MENU_PRINT == wParam) {
+      PRINTDLG pd = {sizeof(pd)};
+      pd.hwndOwner = hwnd;
+      PrintDlg(&pd);
+    } else if (IDM_MENU_EXIT == wParam) {
+      PostMessage(hwnd, WM_DESTROY, 0, 0L);
     }
   }
-    return 0;
-  case WM_INITDIALOG:
     return 0;
   case WM_DESTROY:
     PostQuitMessage(0);
     return 0;
-
+  case WM_INITDIALOG:
+    return 0;
   case WM_PAINT: {
     PAINTSTRUCT ps;
     HDC hdc = BeginPaint(hwnd, &ps);
@@ -181,6 +274,30 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     EndPaint(hwnd, &ps);
   }
     return 0;
+  default:
+    LPFINDREPLACE lpfr;
+
+    if (uMsg == uFindReplaceMsg) {
+      // Get pointer to FINDREPLACE structure from lParam.
+      lpfr = (LPFINDREPLACE)lParam;
+
+      // If the FR_DIALOGTERM flag is set,
+      // invalidate the handle that identifies the dialog box.
+      if (lpfr->Flags & FR_DIALOGTERM) {
+        hDlg = NULL;
+        return 0;
+      }
+
+      // If the FR_FINDNEXT flag is set,
+      // call the application-defined search routine
+      // to search for the requested string.
+      if (lpfr->Flags & FR_FINDNEXT) {
+        SearchFile(lpfr->lpstrFindWhat, (BOOL)(lpfr->Flags & FR_DOWN),
+                   (BOOL)(lpfr->Flags & FR_MATCHCASE));
+      }
+
+      return 0;
+    }
   }
   return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
