@@ -204,9 +204,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
       // https://learn.microsoft.com/zh-cn/windows/win32/dlgbox/find-and-replace-dialog-boxes
       // http://winapi.freetechsecrets.com/win32/WIN32Finding_Text.htm
       // https://cplusplus.com/forum/windows/106496/
-      FINDREPLACE fr; // common dialog box structure
+      // The crash is because the variables fr and FindWhat went out of scope.
+      static FINDREPLACE fr; // common dialog box structure
 
-      char szFindWhat[80] = {'\0'}; // buffer receiving string
+      static char szFindWhat[80] = {'\0'}; // buffer receiving string
 
       ZeroMemory(&fr, sizeof(fr));
       fr.lStructSize = sizeof(fr);
@@ -223,10 +224,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
       }
 
     } else if (IDM_MENU_REPLACE == wParam) {
-      FINDREPLACE fr = {sizeof(fr)};
+      //The crash is because the variables fr and FindWhat went out of scope.
+      static FINDREPLACE fr = {sizeof(fr)};
 
-      char szFindWhat[80] = {'\0'};
-      char szReplaceWith[80] = {'\0'};
+      static char szFindWhat[80] = {'\0'};
+      static char szReplaceWith[80] = {'\0'};
 
       ZeroMemory(&fr, sizeof(fr));
       fr.lStructSize = sizeof(FINDREPLACE);
