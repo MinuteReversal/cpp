@@ -68,6 +68,8 @@
   "C_Cpp.default.includePath": [
     "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/"
   ],
+  "C_Cpp.clang_format_style": "file",
+  "C_Cpp.clang_format_fallbackStyle": "Visual Studio",
   "clangd.fallbackFlags": ["-I${env:FFMPEG_HOME}\\include"],
   "terminal.integrated.env.windows": {
     "PATH": "${env:PATH};C:/flutter/flutter/bin"

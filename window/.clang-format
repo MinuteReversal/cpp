@@ -1,0 +1,4 @@
+# 允许排序#include
+SortIncludes:    false
+# 指针的对齐: Left, Right, Middle
+PointerAlignment: Left
