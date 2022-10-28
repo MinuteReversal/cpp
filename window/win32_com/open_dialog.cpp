@@ -11,6 +11,10 @@
 #include <shobjidl.h>
 #include <windows.h>
 
+#pragma comment(lib,"user32.lib")
+#pragma comment(lib,"ole32.lib")
+#pragma comment(lib,"oleaut32.lib")
+
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine,
                      int nCmdShow) {
   HRESULT hr =
