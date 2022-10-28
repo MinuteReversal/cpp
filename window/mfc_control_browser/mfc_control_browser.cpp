@@ -2,7 +2,7 @@
 #include <afxhtml.h>
 #include <afxwin.h>
 
-#pragma comment(linker, "/subsystem:windows")
+#pragma comment(linker, "/subsystem:windows")///SUBSYSTEM:CONSOLE
 
 #define IDC_HTML 4001
 
