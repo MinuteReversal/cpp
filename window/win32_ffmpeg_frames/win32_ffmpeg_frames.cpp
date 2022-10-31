@@ -5,6 +5,7 @@
 // https://trac.ffmpeg.org/wiki/Projects
 // https://www.cnblogs.com/judgeou/p/14724951.html
 // https://github.com/BtbN/FFmpeg-Builds/releases
+// https://www.jianshu.com/p/3ea9ef713211
 #ifndef UNICODE
 #define UNICODE
 #endif
@@ -17,6 +18,8 @@
 #include <stdint.h>
 #include <atlbase.h>
 #include <atlconv.h>
+#include <thread>
+#include <chrono>
 
 #pragma comment(linker, "/subsystem:windows") /// SUBSYSTEM:CONSOLE
 
@@ -65,11 +68,14 @@ HMENU hMenu = NULL;
 HMENU mSubMenu = NULL;
 DecoderParam decoderParam;
 SwsContext* swsCtx = nullptr;
+std::vector<ColorRGB> buffer;
+auto currentTime = std::chrono::system_clock::now();
 
 void InitDecoder(const char* filePath, DecoderParam& param) {
   AVFormatContext* fmtCtx = nullptr;
   avformat_open_input(&fmtCtx, filePath, NULL, NULL);
   avformat_find_stream_info(fmtCtx, NULL);
+
   AVCodecContext* vcodecCtx = nullptr;
   for (int i = 0; i < fmtCtx->nb_streams; i++) {
     AVStream* stream = fmtCtx->streams[i];
@@ -81,6 +87,7 @@ void InitDecoder(const char* filePath, DecoderParam& param) {
       avcodec_open2(vcodecCtx, codec, NULL);
     }
   }
+
   param.fmtCtx = fmtCtx;
   param.vcodecCtx = vcodecCtx;
   param.width = vcodecCtx->width;
@@ -114,7 +121,7 @@ AVFrame* RequestFrame(DecoderParam& param) {
   return frame;
 }
 
-AVFrame* getFirstFrame(DecoderParam& param) {
+AVFrame* GetFirstFrame(DecoderParam& param) {
   auto& fmtCtx = param.fmtCtx;
   auto& vcodecCtx = param.vcodecCtx;
   auto& videoStreamIndex = param.videoStreamIndex;
@@ -144,21 +151,23 @@ AVFrame* getFirstFrame(DecoderParam& param) {
   return frame;
 }
 
-std::vector<ColorRGB> getRGBPixels(AVFrame* frame) {
+std::vector<ColorRGB> GetRGBPixels(AVFrame* frame,
+                                   std::vector<ColorRGB>& buffer) {
   swsCtx = sws_getCachedContext(swsCtx, frame->width, frame->height,
                                 (AVPixelFormat)frame->format, frame->width,
                                 frame->height, AVPixelFormat::AV_PIX_FMT_BGR24,
                                 NULL, NULL, NULL, 0L);
-                                
-  std::vector<ColorRGB> buffer(frame->width * frame->height);
+
   uint8_t* data[] = {(uint8_t*)&buffer[0]};
   int linesize[] = {frame->width * 3};
+
   sws_scale(swsCtx, frame->data, frame->linesize, 0, frame->height, data,
             linesize);
+
   return buffer;
 }
 
-void strecthBits(HWND hWnd, const std::vector<ColorRGB>& bits, int width,
+void StrecthBits(HWND hWnd, const std::vector<ColorRGB>& bits, int width,
                  int height) {
   HDC hdc = GetDC(hWnd);
   BITMAPINFO bitinfo = {};
@@ -181,9 +190,16 @@ void RenderFrame(DecoderParam& decoderParam) {
   auto& vcodecCtx = decoderParam.vcodecCtx;
   AVFrame* frame = RequestFrame(decoderParam);
 
-  std::vector<ColorRGB> pixels = getRGBPixels(frame);
+  std::vector<ColorRGB> pixels = GetRGBPixels(frame, buffer);
   av_frame_free(&frame);
-  strecthBits(hWnd, pixels, width, height);
+
+  double frameRate =
+      (double)vcodecCtx->framerate.den / vcodecCtx->framerate.num;
+  // std::this_thread::sleep_until(
+  //     currentTime + std::chrono::milliseconds((int)framerate * 1000));
+  // currentTime = std::chrono::system_clock::now();
+  StrecthBits(hWnd, pixels, width, height);
+  Sleep(frameRate * 1000);
 }
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
@@ -213,6 +229,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
       if (fOk) {
         char* filePath = ATL::CW2A(szPath);
         InitDecoder(filePath, decoderParam);
+        auto buf =
+            std::vector<ColorRGB>(decoderParam.width * decoderParam.height);
+        buffer = buf;
         RenderFrame(decoderParam);
       }
       break;
