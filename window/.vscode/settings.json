@@ -73,5 +73,9 @@
   "clangd.fallbackFlags": ["-I${env:FFMPEG_HOME}\\include"],
   "terminal.integrated.env.windows": {
     "PATH": "${env:PATH};C:/flutter/flutter/bin"
-  }
+  },
+  "clangd.arguments": [
+    "--header-insertion=never"
+  ],
+  "clangd.checkUpdates": true
 }
