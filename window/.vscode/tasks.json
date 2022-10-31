@@ -10,7 +10,7 @@
         "args": [
           "/C",
           // The path to VsDevCmd.bat depends on the version of Visual Studio you have installed.
-          "\"C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/Tools/VsDevCmd.bat\"",
+          "\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat\"",
           "&&"
         ]
       }
@@ -98,7 +98,8 @@
         "${file}",
         "${env:FFMPEG_HOME}\\lib\\avcodec.lib",
         "${env:FFMPEG_HOME}\\lib\\avformat.lib",
-        "${env:FFMPEG_HOME}\\lib\\avutil.lib"
+        "${env:FFMPEG_HOME}\\lib\\avutil.lib",
+        "${env:FFMPEG_HOME}\\lib\\swscale.lib"
       ],
       "problemMatcher": ["$msCompile"],
       "group": {

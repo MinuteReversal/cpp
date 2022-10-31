@@ -96,15 +96,20 @@ AVFrame* getFirstFrame(const char* filePath) {
   return frame;
 }
 
-void StrecthBits(HWND hWnd, const std::vector<ColorRGB>& bits, int width,
+void strecthBits(HWND hWnd, const std::vector<ColorRGB>& bits, int width,
                  int height) {
   HDC hdc = GetDC(hWnd);
-  for (int x = 0; x < width; x++) {
-    for (int y = 0; y < height; y++) {
-      const ColorRGB& pixel = bits[x + y * width];
-      SetPixel(hdc, x, y, RGB(pixel.r, pixel.g, pixel.b));
-    }
-  }
+  BITMAPINFO bitinfo = {};
+  BITMAPINFOHEADER& bmiHeader = bitinfo.bmiHeader;
+  bmiHeader.biSize = sizeof(bitinfo.bmiHeader);
+  bmiHeader.biWidth = width;
+  bmiHeader.biHeight = -height;
+  bmiHeader.biPlanes = 1;
+  bmiHeader.biBitCount = 24;
+  bmiHeader.biCompression = BI_RGB;
+  StretchDIBits(hdc, 0, 0, width, height, 0, 0, width, height, &bits[0],
+                &bitinfo, DIB_RGB_COLORS, SRCCOPY);
+  ReleaseDC(hWnd, hdc);
 }
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
@@ -115,7 +120,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
     mSubMenu = CreateMenu();
 
     AppendMenu(hMenu, MF_POPUP, (UINT_PTR)mSubMenu, TEXT("Menu"));
-    AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_SUB, TEXT("Pick mp4 File"));
+    AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_SUB,
+               TEXT("Pick mp4 File"));
 
     SetMenu(hWnd, hMenu);
   }
@@ -144,7 +150,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
           pixels[i] = {r, g, b};
         }
 
-        StrecthBits(hWnd, pixels, width, height);
+        strecthBits(hWnd, pixels, width, height);
       }
       break;
     }

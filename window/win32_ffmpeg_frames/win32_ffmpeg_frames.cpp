@@ -3,7 +3,7 @@
 // https://github.com/Microsoft/FFmpegInterop
 // https://stackoverflow.com/questions/2401764/can-ffmpeg-be-used-as-a-library-instead-of-a-standalone-program
 // https://trac.ffmpeg.org/wiki/Projects
-// https://blog.csdn.net/weixin_45032957/article/details/116447520?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0-116447520-blog-79367721.pc_relevant_3mothn_strategy_and_data_recovery&spm=1001.2101.3001.4242.1&utm_relevant_index=3
+// https://www.cnblogs.com/judgeou/p/14724951.html
 // https://github.com/BtbN/FFmpeg-Builds/releases
 #ifndef UNICODE
 #define UNICODE
@@ -39,9 +39,12 @@ extern "C" {
 
 #include <libavutil/imgutils.h>
 #pragma comment(lib, "avutil.lib")
+
+#include <libswscale/swscale.h>
+#pragma comment(lib, "swscale.lib")
 }
 
-#define IDM_MENU_SUB 4001
+#define IDM_MENU_PICK_FILE 4001
 
 typedef struct ColorRGB {
   uint8_t r;
@@ -49,27 +52,72 @@ typedef struct ColorRGB {
   uint8_t b;
 } ColorRGB;
 
+typedef struct DecoderParam {
+  AVFormatContext* fmtCtx = nullptr;
+  AVCodecContext* vcodecCtx = nullptr;
+  int width;
+  int height;
+  int videoStreamIndex;
+} DecoderParam, *PDecoderParam;
+
 HWND hWnd;
 HMENU hMenu = NULL;
 HMENU mSubMenu = NULL;
+DecoderParam decoderParam;
+SwsContext* swsCtx = nullptr;
 
-AVFrame* getFirstFrame(const char* filePath) {
+void InitDecoder(const char* filePath, DecoderParam& param) {
   AVFormatContext* fmtCtx = nullptr;
   avformat_open_input(&fmtCtx, filePath, NULL, NULL);
   avformat_find_stream_info(fmtCtx, NULL);
-
-  int videoStreamIndex;
   AVCodecContext* vcodecCtx = nullptr;
   for (int i = 0; i < fmtCtx->nb_streams; i++) {
     AVStream* stream = fmtCtx->streams[i];
-    if (stream->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-      const AVCodec* codec = avcodec_find_decoder(stream->codecpar->codec_id);
-      videoStreamIndex = i;
+    const AVCodec* codec = avcodec_find_decoder(stream->codecpar->codec_id);
+    if (codec->type == AVMEDIA_TYPE_VIDEO) {
+      param.videoStreamIndex = i;
       vcodecCtx = avcodec_alloc_context3(codec);
       avcodec_parameters_to_context(vcodecCtx, fmtCtx->streams[i]->codecpar);
       avcodec_open2(vcodecCtx, codec, NULL);
     }
   }
+  param.fmtCtx = fmtCtx;
+  param.vcodecCtx = vcodecCtx;
+  param.width = vcodecCtx->width;
+  param.height = vcodecCtx->height;
+}
+
+AVFrame* RequestFrame(DecoderParam& param) {
+  auto& fmtCtx = param.fmtCtx;
+  auto& vcodecCtx = param.vcodecCtx;
+  auto& videoStreamIndex = param.videoStreamIndex;
+  AVFrame* frame = nullptr;
+  while (TRUE) {
+    AVPacket* packet = av_packet_alloc();
+    int ret = av_read_frame(fmtCtx, packet);
+    if (ret == 0 && packet->stream_index == videoStreamIndex) {
+      ret = avcodec_send_packet(vcodecCtx, packet);
+      if (ret == 0) {
+        frame = av_frame_alloc();
+        ret = avcodec_receive_frame(vcodecCtx, frame);
+        if (ret == 0) {
+          av_packet_unref(packet);
+          break;
+        } else if (ret == AVERROR(EAGAIN)) {
+          av_frame_unref(frame);
+          continue;
+        }
+      }
+    }
+    av_packet_unref(packet);
+  }
+  return frame;
+}
+
+AVFrame* getFirstFrame(DecoderParam& param) {
+  auto& fmtCtx = param.fmtCtx;
+  auto& vcodecCtx = param.vcodecCtx;
+  auto& videoStreamIndex = param.videoStreamIndex;
 
   AVFrame* frame = nullptr;
   while (TRUE) {
@@ -96,15 +144,46 @@ AVFrame* getFirstFrame(const char* filePath) {
   return frame;
 }
 
-void StrecthBits(HWND hWnd, const std::vector<ColorRGB>& bits, int width,
+std::vector<ColorRGB> getRGBPixels(AVFrame* frame) {
+  swsCtx = sws_getCachedContext(swsCtx, frame->width, frame->height,
+                                (AVPixelFormat)frame->format, frame->width,
+                                frame->height, AVPixelFormat::AV_PIX_FMT_BGR24,
+                                NULL, NULL, NULL, 0L);
+                                
+  std::vector<ColorRGB> buffer(frame->width * frame->height);
+  uint8_t* data[] = {(uint8_t*)&buffer[0]};
+  int linesize[] = {frame->width * 3};
+  sws_scale(swsCtx, frame->data, frame->linesize, 0, frame->height, data,
+            linesize);
+  return buffer;
+}
+
+void strecthBits(HWND hWnd, const std::vector<ColorRGB>& bits, int width,
                  int height) {
   HDC hdc = GetDC(hWnd);
-  for (int x = 0; x < width; x++) {
-    for (int y = 0; y < height; y++) {
-      const ColorRGB& pixel = bits[x + y * width];
-      SetPixel(hdc, x, y, RGB(pixel.r, pixel.g, pixel.b));
-    }
-  }
+  BITMAPINFO bitinfo = {};
+  BITMAPINFOHEADER& bmiHeader = bitinfo.bmiHeader;
+  bmiHeader.biSize = sizeof(bitinfo.bmiHeader);
+  bmiHeader.biWidth = width;
+  bmiHeader.biHeight = -height;
+  bmiHeader.biPlanes = 1;
+  bmiHeader.biBitCount = 24;
+  bmiHeader.biCompression = BI_RGB;
+  StretchDIBits(hdc, 0, 0, width, height, 0, 0, width, height, &bits[0],
+                &bitinfo, DIB_RGB_COLORS, SRCCOPY);
+  ReleaseDC(hWnd, hdc);
+}
+
+void RenderFrame(DecoderParam& decoderParam) {
+  int width = decoderParam.width;
+  int height = decoderParam.height;
+  auto& fmtCtx = decoderParam.fmtCtx;
+  auto& vcodecCtx = decoderParam.vcodecCtx;
+  AVFrame* frame = RequestFrame(decoderParam);
+
+  std::vector<ColorRGB> pixels = getRGBPixels(frame);
+  av_frame_free(&frame);
+  strecthBits(hWnd, pixels, width, height);
 }
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
@@ -115,13 +194,14 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
     mSubMenu = CreateMenu();
 
     AppendMenu(hMenu, MF_POPUP, (UINT_PTR)mSubMenu, TEXT("Menu"));
-    AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_SUB, TEXT("Pick mp4 File"));
+    AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_PICK_FILE,
+               TEXT("Pick mp4 File"));
 
     SetMenu(hWnd, hMenu);
   }
   case WM_COMMAND:
     switch (wParam) {
-    case IDM_MENU_SUB:
+    case IDM_MENU_PICK_FILE:
       wchar_t szPath[MAX_PATH] = {'\0'};
       OPENFILENAME ofn = {sizeof(ofn)}; // common dialog box structure
       ofn.hwndOwner = hWnd;
@@ -132,19 +212,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
       BOOL fOk = GetOpenFileName(&ofn);
       if (fOk) {
         char* filePath = ATL::CW2A(szPath);
-        AVFrame* firstFrame = getFirstFrame(filePath);
-        int width = firstFrame->width;
-        int height = firstFrame->height;
-
-        std::vector<ColorRGB> pixels(width * height);
-        for (int i = 0; i < pixels.size(); i++) {
-          uint8_t r = firstFrame->data[0][i];
-          uint8_t g = r;
-          uint8_t b = r;
-          pixels[i] = {r, g, b};
-        }
-
-        StrecthBits(hWnd, pixels, width, height);
+        InitDecoder(filePath, decoderParam);
+        RenderFrame(decoderParam);
       }
       break;
     }
@@ -203,9 +272,19 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   // Run the message loop.
 
   MSG msg = {};
-  while (GetMessage(&msg, NULL, 0, 0) > 0) {
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
+  while (TRUE) {
+    BOOL hasMSG = PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
+    if (hasMSG) {
+      if (msg.message == WM_QUIT) {
+        break;
+      }
+      TranslateMessage(&msg);
+      DispatchMessage(&msg);
+    } else {
+      if (decoderParam.vcodecCtx != nullptr) {
+        RenderFrame(decoderParam);
+      }
+    }
   }
 
   return 0;

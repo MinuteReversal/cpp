@@ -94,6 +94,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
       MessageBoxA(hWnd, text, "alert", MB_OK);
     } break;
     case IDM_MENU2: {
+      // https://blog.csdn.net/RootSuper/article/details/55213180
       // https://learn.microsoft.com/zh-tw/cpp/c-runtime-library/reference/strncpy-s-strncpy-s-l-wcsncpy-s-wcsncpy-s-l-mbsncpy-s-mbsncpy-s-l?view=msvc-170
       char szText[256] = {};
       strncpy_s(szText, 256, "hello world\0", 12);
