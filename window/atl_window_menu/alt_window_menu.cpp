@@ -3,11 +3,12 @@
 #include <windows.h>
 #include <chrono>
 #include <sstream>
-#include <cstring>
-#include <string.h>
+#include <thread>
+#include <Shlwapi.h>
 
 #define IDC_MYATLWINDOWTEST 0x0001
 #define ID_MENU_TIME 4001
+#define ID_MENU_SLEEP 4002
 
 class CMainWindow : public CWindowImpl<CMainWindow> {
 	private:
@@ -20,16 +21,36 @@ class CMainWindow : public CWindowImpl<CMainWindow> {
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestory)
 		COMMAND_ID_HANDLER(ID_MENU_TIME, OnMenu1Click)
+		COMMAND_ID_HANDLER(ID_MENU_SLEEP, OnSleep)
 		END_MSG_MAP()
 
 		LRESULT OnMenu1Click(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 							 BOOL& bHandled) {
 
-			std::stringstream os;
-			os << std::chrono::system_clock::now().time_since_epoch().count();
-			std::string intString = os.str();
+			auto start = std::chrono::system_clock::now();
+			std::this_thread::sleep_for(std::chrono::seconds(1)); // sleep
+			auto end = std::chrono::system_clock::now();
+			std::chrono::duration<float> fs = end - start;
+			std::chrono::milliseconds ms =
+				std::chrono::duration_cast<std::chrono::milliseconds>(fs);
+			std::stringstream str;
+			// https://stackoverflow.com/questions/14391327/how-to-get-duration-as-int-millis-and-float-seconds-from-chrono
+			str << ms.count();
+			MessageBox(str.str().c_str(), "alert", MB_OK);
 
-			MessageBox(intString.c_str(), "alert", MB_OK);
+			return 0;
+		}
+		// https://learn.microsoft.com/en-us/cpp/atl/commandhandler?view=msvc-170
+		LRESULT OnSleep(WORD wNotifyCode, WORD wID, HWND hWndCtl,
+						BOOL& bHandled) {
+			SYSTEMTIME start, end;
+			GetSystemTime(&start);
+			Sleep(1000);
+			GetSystemTime(&end);
+			auto duration = end.wMilliseconds - start.wMilliseconds;
+			std::stringstream str;
+			str << duration;
+			MessageBox(str.str().c_str(), "alert", MB_OK);
 			return 0;
 		}
 		LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam,
@@ -37,7 +58,8 @@ class CMainWindow : public CWindowImpl<CMainWindow> {
 			m_hMenubar = CreateMenu();
 			m_hMenu = CreateMenu();
 			AppendMenu(m_hMenubar, MF_POPUP, (UINT_PTR)m_hMenu, "Menu");
-			AppendMenu(m_hMenu, MF_STRING, ID_MENU_TIME, "TIME");
+			AppendMenu(m_hMenu, MF_STRING, ID_MENU_TIME, "time");
+			AppendMenu(m_hMenu, MF_STRING, ID_MENU_SLEEP, "sleep");
 			SetMenu(m_hMenubar);
 			return 0;
 		}
