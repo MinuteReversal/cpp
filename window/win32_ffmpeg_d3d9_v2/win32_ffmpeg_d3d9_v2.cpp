@@ -3,9 +3,8 @@
 // https://github.com/Microsoft/FFmpegInterop
 // https://stackoverflow.com/questions/2401764/can-ffmpeg-be-used-as-a-library-instead-of-a-standalone-program
 // https://trac.ffmpeg.org/wiki/Projects
-// https://www.cnblogs.com/judgeou/p/14724951.html
 // https://github.com/BtbN/FFmpeg-Builds/releases
-// https://www.jianshu.com/p/3ea9ef713211
+// https://www.cnblogs.com/judgeou/p/14724951.html
 #ifndef UNICODE
 #define UNICODE
 #endif
@@ -123,6 +122,8 @@ AVFrame* RequestFrame(DecoderParam& param) {
           continue;
         }
       }
+    } else if (ret < 0) {
+      break;
     }
     av_packet_unref(packet);
   }
@@ -210,6 +211,9 @@ void RenderFrame(DecoderParam& decoderParam) {
   auto& fmtCtx = decoderParam.fmtCtx;
   auto& vcodecCtx = decoderParam.vcodecCtx;
   AVFrame* frame = RequestFrame(decoderParam);
+
+  if (frame == nullptr)
+    return;
 
   GetRGBPixels(frame, buffer, AVPixelFormat::AV_PIX_FMT_BGRA, 4);
   av_frame_free(&frame);

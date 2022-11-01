@@ -1,4 +1,11 @@
 # 允许排序#include
-SortIncludes:    false
+SortIncludes: false
 # 指针的对齐: Left, Right, Middle
 PointerAlignment: Left
+# https://stackoverflow.com/questions/46996313/how-to-make-clang-format-indent-all-detail-namespaces-by-one
+NamespaceIndentation: All
+# https://stackoverflow.com/questions/41022954/how-to-indent-after-access-modifiers-with-clang-format
+UseTab: ForContinuationAndIndentation
+IndentWidth: 4
+TabWidth: 4
+IndentAccessModifiers: true

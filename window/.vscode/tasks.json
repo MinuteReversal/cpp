@@ -95,7 +95,7 @@
         "${fileDirname}\\${fileBasenameNoExtension}.exe",
         "/I",        
         "${env:FFMPEG_HOME}\\include",
-        "${file}",
+        "${fileDirname}\\*.cpp",
         "${env:FFMPEG_HOME}\\lib\\avcodec.lib",
         "${env:FFMPEG_HOME}\\lib\\avformat.lib",
         "${env:FFMPEG_HOME}\\lib\\avutil.lib",
