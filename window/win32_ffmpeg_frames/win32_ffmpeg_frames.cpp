@@ -195,9 +195,9 @@ void RenderFrame(DecoderParam& decoderParam) {
 
   double frameRate =
       (double)vcodecCtx->framerate.den / vcodecCtx->framerate.num;
-  // std::this_thread::sleep_until(
-  //     currentTime + std::chrono::milliseconds((int)framerate * 1000));
-  // currentTime = std::chrono::system_clock::now();
+  std::this_thread::sleep_until(
+      currentTime + std::chrono::milliseconds((int)(frameRate * 1000)));
+  currentTime = std::chrono::system_clock::now();
   StrecthBits(hWnd, pixels, width, height);
   Sleep(frameRate * 1000);
 }
