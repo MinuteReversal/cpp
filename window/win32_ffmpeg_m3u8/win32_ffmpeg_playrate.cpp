@@ -5,7 +5,6 @@
 // https://trac.ffmpeg.org/wiki/Projects
 // https://github.com/BtbN/FFmpeg-Builds/releases
 // https://www.cnblogs.com/judgeou/p/14724951.html
-// https://blog.csdn.net/tonychan129/article/details/125471964
 #ifndef UNICODE
 #define UNICODE
 #endif
@@ -24,7 +23,6 @@
 #include <chrono>
 #include <wrl.h>
 #include "AudioPlayer.h"
-#include "resource.h"
 
 #pragma comment(linker, "/subsystem:windows") /// SUBSYSTEM:CONSOLE
 
@@ -56,6 +54,7 @@ extern "C" {
 }
 
 using Microsoft::WRL::ComPtr;
+auto currentTime = std::chrono::system_clock::now();
 ComPtr<IDirect3D9> d3d9 = Direct3DCreate9(D3D_SDK_VERSION);
 ComPtr<IDirect3DDevice9> d3d9Device;
 D3DPRESENT_PARAMETERS d3dParams = {};
@@ -68,6 +67,8 @@ auto displayFreq = 0;
 int displayCount = 1;
 // 记录视频播放了多少帧
 int frameCount = 1;
+
+#define IDM_MENU_PICK_FILE 4001
 
 struct DecoderParam {
 		AVFormatContext* fmtCtx = nullptr;
@@ -86,11 +87,6 @@ struct MediaFrame {
 		AVFrame* frame;
 };
 
-struct OpenUrlDialogInfo {
-		WCHAR* pszURL;
-		DWORD cch;
-};
-
 HWND hWnd;
 HMENU hMenu = NULL;
 HMENU mSubMenu = NULL;
@@ -98,88 +94,6 @@ DecoderParam decoderParam;
 SwsContext* swsCtx = nullptr;
 std::vector<uint8_t> buffer;
 auto renderTime = std::chrono::system_clock::now();
-HINSTANCE g_hInstance;
-
-HRESULT AllocGetWindowText(HWND hwnd, WCHAR** pszText, DWORD* pcchLen) {
-	if (pszText == NULL || pcchLen == NULL) {
-		return E_POINTER;
-	}
-
-	*pszText = NULL;
-
-	int cch = GetWindowTextLength(hwnd);
-	if (cch < 0) {
-		return E_UNEXPECTED;
-	}
-
-	PWSTR pszTmp = (PWSTR)CoTaskMemAlloc(sizeof(WCHAR) * (cch + 1));
-	// Includes room for terminating NULL character
-
-	if (!pszTmp) {
-		return E_OUTOFMEMORY;
-	}
-
-	if (cch == 0) {
-		pszTmp[0] = L'\0'; // No text.
-	} else {
-		int res = GetWindowText(hwnd, pszTmp, (cch + 1));
-		// Size includes terminating null character.
-
-		// GetWindowText returns 0 if (a) there is no text or (b) it failed.
-		// We checked for (a) already, so 0 means failure here.
-		if (res == 0) {
-			CoTaskMemFree(pszTmp);
-			return __HRESULT_FROM_WIN32(GetLastError());
-		}
-	}
-
-	// If we got here, szTmp is valid, so return it to the caller.
-	*pszText = pszTmp;
-
-	// Return the length NOT including the '\0'.
-	*pcchLen = static_cast<DWORD>(cch);
-
-	return S_OK;
-}
-
-//  Dialog proc for the "Open URL" dialog.
-INT_PTR CALLBACK OpenUrlDialogProc(HWND hDlg, UINT message, WPARAM wParam,
-								   LPARAM lParam) {
-	static OpenUrlDialogInfo* pUrl = NULL;
-
-	BOOL result = FALSE;
-
-	switch (message) {
-		case WM_INITDIALOG:
-			// The caller sends a pointer to an OpenUrlDialogInfo structure as
-			// the lParam. This structure stores the URL.
-			pUrl = (OpenUrlDialogInfo*)lParam;
-			return (INT_PTR)TRUE;
-
-		case WM_COMMAND:
-			switch (LOWORD(wParam)) {
-				case IDOK:
-					if (pUrl) {
-						// Get the URL from the edit box in the dialog. This
-						// function allocates memory. The caller must call
-						// CoTaskMemAlloc.
-						if (SUCCEEDED(AllocGetWindowText(
-								GetDlgItem(hDlg, IDC_EDIT_URL), &pUrl->pszURL,
-								&pUrl->cch))) {
-							result = TRUE;
-						}
-					}
-					EndDialog(hDlg, result ? IDOK : IDABORT);
-					break;
-
-				case IDCANCEL:
-					EndDialog(hDlg, LOWORD(IDCANCEL));
-					break;
-			}
-			return (INT_PTR)FALSE;
-	}
-	return (INT_PTR)FALSE;
-}
 
 // 获取视频帧率
 double GetFrameFreq(const DecoderParam& param) {
@@ -333,6 +247,12 @@ void RenderFrame(DecoderParam& decoderParam) {
 
 	if (mediaFrame.type == AVMEDIA_TYPE_VIDEO) {
 		if (freqRatio < countRatio) {
+			double frameRate =
+				(double)vcodecCtx->framerate.den / vcodecCtx->framerate.num;
+			std::this_thread::sleep_until(
+				currentTime +
+				std::chrono::milliseconds((int)(frameRate * 1000)));
+			currentTime = std::chrono::system_clock::now();
 			GetRGBPixels(frame, buffer, AVPixelFormat::AV_PIX_FMT_BGRA, 4);
 			StrecthBits(d3d9Device.Get(), buffer, width, height);
 			av_frame_free(&frame);
@@ -349,53 +269,22 @@ void RenderFrame(DecoderParam& decoderParam) {
 	displayCount++;
 }
 
-void OpenVideo(char szPath[]) {
-	InitDecoder(szPath, decoderParam);
-	buffer = std::vector<uint8_t>(decoderParam.width * decoderParam.height * 4);
-
-	d3dParams.Windowed = TRUE;
-	d3dParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	d3dParams.BackBufferFormat = D3DFORMAT::D3DFMT_X8R8G8B8;
-	d3dParams.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
-	d3dParams.BackBufferWidth = decoderParam.width;
-	d3dParams.BackBufferHeight = decoderParam.height;
-	d3d9->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,
-					   D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dParams,
-					   d3d9Device.GetAddressOf());
-
-	RenderFrame(decoderParam);
-}
-
-void OnOpenURL(HWND hwnd) {
-	HRESULT hr = S_OK;
-
-	// Pass in an OpenUrlDialogInfo structure to the dialog. The dialog
-	// fills in this structure with the URL. The dialog proc allocates
-	// the memory for the string.
-
-	OpenUrlDialogInfo url;
-	ZeroMemory(&url, sizeof(url));
-
-	// Show the Open URL dialog.
-	if (IDOK == DialogBoxParam(g_hInstance, MAKEINTRESOURCE(IDD_OPENURL), hwnd,
-							   OpenUrlDialogProc, (LPARAM)&url)) {
-		// Open the file with the playback object.
-		OpenVideo(ATL::CW2A(url.pszURL));
-
-		// The caller must free the URL string.
-		CoTaskMemFree(url.pszURL);
-	}
-}
-
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 							LPARAM lParam) {
 	switch (uMsg) {
-		case WM_CREATE:
-			return 0;
+		case WM_CREATE: {
+			hMenu = CreateMenu();
+			mSubMenu = CreateMenu();
+
+			AppendMenu(hMenu, MF_POPUP, (UINT_PTR)mSubMenu, TEXT("Menu"));
+			AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU_PICK_FILE,
+					   TEXT("Pick mp4 File"));
+
+			SetMenu(hWnd, hMenu);
+		}
 		case WM_COMMAND:
 			switch (wParam) {
-				case ID_FILE_OPENFILE: {
-
+				case IDM_MENU_PICK_FILE:
 					wchar_t szPath[MAX_PATH] = {'\0'};
 					OPENFILENAME ofn = {
 						sizeof(ofn)}; // common dialog box structure
@@ -407,17 +296,31 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 					BOOL fOk = GetOpenFileName(&ofn);
 					if (fOk) {
 						char* filePath = ATL::CW2A(szPath);
-						OpenVideo(filePath);
+						InitDecoder(filePath, decoderParam);
+
+						buffer = std::vector<uint8_t>(decoderParam.width *
+													  decoderParam.height * 4);
+
+						d3dParams.Windowed = TRUE;
+						d3dParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
+						d3dParams.BackBufferFormat = D3DFORMAT::D3DFMT_X8R8G8B8;
+						d3dParams.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
+						d3dParams.BackBufferWidth = decoderParam.width;
+						d3dParams.BackBufferHeight = decoderParam.height;
+						d3d9->CreateDevice(
+							D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,
+							D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dParams,
+							d3d9Device.GetAddressOf());
+
+						RenderFrame(decoderParam);
 					}
-				} break;
-				case ID_FILE_OPENURL: {
-					OnOpenURL(hWnd);
-				} break;
+					break;
 			}
 			return 0;
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			return 0;
+
 		case WM_PAINT: {
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hWnd, &ps);
@@ -441,7 +344,6 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wc.lpfnWndProc = WindowProc;
 	wc.hInstance = hInstance;
 	wc.lpszClassName = CLASS_NAME;
-	wc.lpszMenuName = MAKEINTRESOURCE(IDC_MFPLAYBACK);
 
 	RegisterClass(&wc);
 
@@ -471,7 +373,6 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	// Run the message loop.
 
 	MSG msg = {};
-	auto lastTime = std::chrono::system_clock::now();
 
 	while (TRUE) {
 		BOOL hasMSG = PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
@@ -483,14 +384,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			DispatchMessage(&msg);
 		} else {
 			if (decoderParam.vcodecCtx != nullptr) {
-				auto now = std::chrono::system_clock::now();
-				auto different =
-					std::chrono::duration_cast<std::chrono::milliseconds>(
-						now - lastTime);
 				RenderFrame(decoderParam);
-				if (different.count() >= (1000 / displayFreq)) {
-					lastTime = now;
-				}
 			}
 		}
 	}

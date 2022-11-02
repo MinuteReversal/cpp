@@ -9,3 +9,5 @@ UseTab: ForContinuationAndIndentation
 IndentWidth: 4
 TabWidth: 4
 IndentAccessModifiers: true
+# https://stackoverflow.com/questions/60727685/how-to-automatically-indent-in-vscode-in-a-switch-case-statement
+IndentCaseLabels: true

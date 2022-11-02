@@ -26,7 +26,7 @@
 #define IDD_PROMPT 50001
 
 HWND hwnd;
-HINSTANCE g_hInstance;
+HINSTANCE hInst;
 UINT uFindReplaceMsg; // message identifier for FINDMSGSTRING
 HWND hDlg = NULL;     // handle of Find dialog box
 
@@ -86,7 +86,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   RegisterClass(&wc);
 
   // Create the window.
-  g_hInstance = hInstance;
+  hInstance = hInstance;
   hwnd = CreateWindow(            // Optional window styles.
       CLASS_NAME,                 // Window class
       "Learn to Program Windows", // Window text
@@ -151,7 +151,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     } else if (IDM_MENU_CONFIRM == wParam) {
       MessageBox(hwnd, "your click insert menu", "alert", MB_OKCANCEL);
     } else if (IDM_MENU_PROMPT == wParam) {
-      DialogBoxParam(g_hInstance, MAKEINTRESOURCE(IDD_PROMPT), hwnd, DialogProc,
+      DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_PROMPT), hwnd, DialogProc,
                      lParam);
       DWORD err = GetLastError();
       if (err == ERROR_RESOURCE_DATA_NOT_FOUND) {
