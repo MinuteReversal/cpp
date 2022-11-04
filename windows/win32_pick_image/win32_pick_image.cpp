@@ -3,9 +3,11 @@
 #define UNICODE
 #endif
 
+#include <stdint.h>
 #include <windows.h>
 #include <winuser.h>
 #include <wingdi.h>
+#include <algorithm>
 
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "ComDlg32.Lib")
@@ -14,6 +16,8 @@
 #define IDM_MENU1 9001
 #define IDM_MENU2 9002
 #define IDM_MENU3 9003
+#define WIDTH 256
+#define HEIGHT 256
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -79,6 +83,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 			AppendMenu(hMenu, MF_POPUP, (UINT_PTR)mSubMenu, TEXT("Menu"));
 			AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU1,
 					   TEXT("Pick File"));
+			AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU2,
+					   TEXT("Window To uint8_t"));
 
 			SetMenu(hWnd, hMenu);
 		}
@@ -106,17 +112,51 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 							break;
 						}
 						SelectObject(hmemdc, hBitmap);
-						BitBlt(hdc, 0, 0, 256, 256, hmemdc, 0, 0, SRCCOPY);
+						BitBlt(hdc, 0, 0, WIDTH, HEIGHT, hmemdc, 0, 0, SRCCOPY);
 						DeleteObject(hBitmap);
 						ReleaseDC(hWnd, hmemdc);
 					}
 				} break;
-				case IDM_MENU2:
-					MessageBox(hWnd, L"clicked menu2", L"alert", MB_OK);
-					break;
-				case IDM_MENU3:
+				case IDM_MENU2: {
+					// http://cn.voidcc.com/question/p-sdjnyeip-ns.html
+					HDC hdc = GetDC(hWnd);
+					HDC hdcMemoryDC = CreateCompatibleDC(hdc);
+
+					BITMAPINFO bmi;
+					memset(&bmi, 0, sizeof(BITMAPINFO));
+					bmi.bmiHeader.biSize = sizeof(tagBITMAPINFOHEADER);
+					bmi.bmiHeader.biWidth = WIDTH;
+					bmi.bmiHeader.biHeight = -HEIGHT;
+					bmi.bmiHeader.biPlanes = 1;
+					bmi.bmiHeader.biBitCount = 32;
+					bmi.bmiHeader.biCompression = BI_RGB;
+
+					HBITMAP hbmp;
+					COLORREF* pixelBuffer;
+					hbmp = CreateDIBSection(hdcMemoryDC, &bmi, DIB_RGB_COLORS,
+											(VOID**)&pixelBuffer, NULL, 0);
+					SelectObject(hdcMemoryDC, hbmp);
+					BitBlt(hdcMemoryDC, 0, 0, WIDTH, HEIGHT, hdc, 0, 0,
+						   SRCCOPY);
+					// https://stackoverflow.com/questions/65331211/what-is-the-size-of-ppvbits-returned-by-createdibsection
+					size_t stride =
+						((((bmi.bmiHeader.biWidth * bmi.bmiHeader.biBitCount) +
+						   31) &
+						  ~31) >>
+						 3);
+					// BYTE r = GetRValue(pixelBuffer);
+					// BYTE g = GetGValue(pixelBuffer);
+					// BYTE b = GetBValue(pixelBuffer);
+
+				} break;
+				case IDM_MENU3: {
+					uint32_t arr[240 * 120];
+					std::fill(arr, arr + sizeof(arr) / sizeof(*arr),
+							  RGB(255, 0, 0));
+					// or std::fill(arr, arr + 240 * 120, RGB(255, 0, 0));
+					HBITMAP hBitmap = CreateBitmap(240, 120, 1, 32, (void*)arr);
 					MessageBox(hWnd, L"clicked menu3", L"alert", MB_OK);
-					break;
+				} break;
 			}
 			return 0;
 		case WM_DESTROY:
