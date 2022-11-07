@@ -8,6 +8,9 @@
 #include <winuser.h>
 #include <wingdi.h>
 #include <algorithm>
+#include <string>
+#include <stdio.h>
+#include <atlstr.h>
 
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "ComDlg32.Lib")
@@ -16,6 +19,9 @@
 #define IDM_MENU1 9001
 #define IDM_MENU2 9002
 #define IDM_MENU3 9003
+#define IDM_MENU4 9004
+#define IDM_MENU5 9005
+
 #define WIDTH 256
 #define HEIGHT 256
 
@@ -23,7 +29,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 HWND hWnd;
 HMENU hMenu = NULL;
-HMENU mSubMenu = NULL;
+HMENU hSubMenu = NULL;
 HINSTANCE hInst = NULL;
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -65,6 +71,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	// Run the message loop.
 
 	MSG msg = {};
+
 	while (GetMessage(&msg, NULL, 0, 0) > 0) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
@@ -73,81 +80,73 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	return 0;
 }
 
+wchar_t* PickImageFile() {
+	wchar_t* szPath = new wchar_t[MAX_PATH];
+	OPENFILENAME ofn = {sizeof(ofn)}; // common dialog box structure
+	ofn.hwndOwner = hWnd;
+	ofn.lpstrFilter = L"*.bmp\0";
+	ofn.lpstrFile = szPath;
+	ofn.nMaxFile = sizeof(wchar_t) * MAX_PATH;
+
+	BOOL fOk = GetOpenFileName(&ofn);
+	if (fOk) {
+		return szPath;
+	}
+	return nullptr;
+}
+
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 							LPARAM lParam) {
 	switch (uMsg) {
 		case WM_CREATE: {
 			hMenu = CreateMenu();
-			mSubMenu = CreateMenu();
+			hSubMenu = CreateMenu();
 
-			AppendMenu(hMenu, MF_POPUP, (UINT_PTR)mSubMenu, TEXT("Menu"));
-			AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU1,
+			AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hSubMenu, TEXT("Menu"));
+			AppendMenu(hSubMenu, MF_STRING, (UINT_PTR)IDM_MENU1,
 					   TEXT("Pick File"));
-			AppendMenu(mSubMenu, MF_STRING, (UINT_PTR)IDM_MENU2,
-					   TEXT("Window To uint8_t"));
+			AppendMenu(hSubMenu, MF_STRING, (UINT_PTR)IDM_MENU2,
+					   TEXT("Window To unsigned int"));
+			AppendMenu(hSubMenu, MF_STRING, (UINT_PTR)IDM_MENU3,
+					   TEXT("uint8_t to HBITMAP"));
+			AppendMenu(hSubMenu, MF_STRING, (UINT_PTR)IDM_MENU4,
+					   TEXT("Make Text MemDC"));
+			AppendMenu(hSubMenu, MF_STRING, (UINT_PTR)IDM_MENU5,
+					   TEXT("MemDC to BYTE*"));
 
 			SetMenu(hWnd, hMenu);
 		}
 		case WM_COMMAND:
 			switch (wParam) {
 				case IDM_MENU1: {
-
-					wchar_t szPath[MAX_PATH] = {};
-					OPENFILENAME ofn = {
-						sizeof(ofn)}; // common dialog box structure
-					ofn.hwndOwner = hWnd;
-					ofn.lpstrFilter = L"*.bmp";
-					ofn.lpstrFile = szPath;
-					ofn.nMaxFile = ARRAYSIZE(szPath);
-
-					BOOL fOk = GetOpenFileName(&ofn);
-					if (fOk) {
-						HDC hdc = GetDC(hWnd);
-						HDC hmemdc = CreateCompatibleDC(hdc);
-						HBITMAP hBitmap = (HBITMAP)LoadImage(
-							hInst, szPath, IMAGE_BITMAP, LR_DEFAULTSIZE,
-							LR_DEFAULTSIZE, LR_LOADFROMFILE);
-						if (hBitmap == NULL) {
-							MessageBox(hWnd, L"load fail", L"error", MB_OK);
-							break;
-						}
-						SelectObject(hmemdc, hBitmap);
-						BitBlt(hdc, 0, 0, WIDTH, HEIGHT, hmemdc, 0, 0, SRCCOPY);
-						DeleteObject(hBitmap);
-						ReleaseDC(hWnd, hmemdc);
-					}
+					wchar_t* szPath = PickImageFile();
+					if (NULL == szPath)
+						break;
+					HDC hdc = GetDC(hWnd);
+					HDC hmemdc = CreateCompatibleDC(hdc);
+					HBITMAP hBitmap = (HBITMAP)LoadImage(
+						hInst, szPath, IMAGE_BITMAP, LR_DEFAULTSIZE,
+						LR_DEFAULTSIZE, LR_LOADFROMFILE);
+					SelectObject(hmemdc, hBitmap);
+					BitBlt(hdc, 0, 0, WIDTH, HEIGHT, hmemdc, 0, 0, SRCCOPY);
+					DeleteObject(hBitmap);
+					ReleaseDC(hWnd, hmemdc);
+					delete[] szPath;
 				} break;
 				case IDM_MENU2: {
-					// http://cn.voidcc.com/question/p-sdjnyeip-ns.html
-					HDC hdc = GetDC(hWnd);
-					HDC hdcMemoryDC = CreateCompatibleDC(hdc);
+					wchar_t* szPath = PickImageFile();
+					if (NULL == szPath)
+						break;
 
-					BITMAPINFO bmi;
-					memset(&bmi, 0, sizeof(BITMAPINFO));
-					bmi.bmiHeader.biSize = sizeof(tagBITMAPINFOHEADER);
-					bmi.bmiHeader.biWidth = WIDTH;
-					bmi.bmiHeader.biHeight = -HEIGHT;
-					bmi.bmiHeader.biPlanes = 1;
-					bmi.bmiHeader.biBitCount = 32;
-					bmi.bmiHeader.biCompression = BI_RGB;
-
-					HBITMAP hbmp;
-					COLORREF* pixelBuffer;
-					hbmp = CreateDIBSection(hdcMemoryDC, &bmi, DIB_RGB_COLORS,
-											(VOID**)&pixelBuffer, NULL, 0);
-					SelectObject(hdcMemoryDC, hbmp);
-					BitBlt(hdcMemoryDC, 0, 0, WIDTH, HEIGHT, hdc, 0, 0,
-						   SRCCOPY);
-					// https://stackoverflow.com/questions/65331211/what-is-the-size-of-ppvbits-returned-by-createdibsection
-					size_t stride =
-						((((bmi.bmiHeader.biWidth * bmi.bmiHeader.biBitCount) +
-						   31) &
-						  ~31) >>
-						 3);
-					// BYTE r = GetRValue(pixelBuffer);
-					// BYTE g = GetGValue(pixelBuffer);
-					// BYTE b = GetBValue(pixelBuffer);
-
+					FILE* f;
+					fopen_s(&f, ATL::CW2A(szPath), "rb");
+					unsigned int* buffer = new unsigned int[256 * 256];
+					fseek(f, 54, 0);
+					fread(buffer, 256 * 256 * 4, 1, f);
+					fclose(f);
+					delete[] szPath;
+					MessageBox(hWnd, std::to_wstring(buffer[0]).c_str(),
+							   L"alert", MB_OK);
 				} break;
 				case IDM_MENU3: {
 					uint32_t arr[240 * 120];
@@ -156,6 +155,58 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 					// or std::fill(arr, arr + 240 * 120, RGB(255, 0, 0));
 					HBITMAP hBitmap = CreateBitmap(240, 120, 1, 32, (void*)arr);
 					MessageBox(hWnd, L"clicked menu3", L"alert", MB_OK);
+				} break;
+				case IDM_MENU4: {
+					// https://learn.microsoft.com/zh-cn/windows/win32/gdi/capturing-an-image
+					HDC hdcScreen = GetDC(NULL);
+					HDC hdcWindow = GetDC(hWnd);
+					HDC hdcMemDC = CreateCompatibleDC(hdcWindow);
+					HBITMAP hBitmap =
+						CreateCompatibleBitmap(hdcWindow, 256, 256);
+					SelectObject(hdcMemDC, hBitmap);
+					RECT rc = {0, 0, 120, 30};
+
+					wchar_t text[] = L"hello";
+					DrawText(hdcMemDC, text, ARRAYSIZE(text) - 1, &rc,
+							 DT_SINGLELINE | DT_NOCLIP);
+					BitBlt(hdcWindow, 0, 0, WIDTH, HEIGHT, hdcMemDC, 0, 0,
+						   SRCCOPY);
+
+					DeleteObject(hdcMemDC);
+					ReleaseDC(hWnd, hdcWindow);
+					ReleaseDC(NULL, hdcScreen);
+				} break;
+				case IDM_MENU5: {
+
+					HDC hdcWindow = GetDC(hWnd);
+					HDC hdcMemDC = CreateCompatibleDC(hdcWindow);
+					HDC hdcMemDC2 = CreateCompatibleDC(hdcWindow);
+					HBITMAP hBitmap = CreateCompatibleBitmap(hdcWindow, 10, 10);
+					SelectObject(hdcMemDC, hBitmap);
+
+					RECT rc = {0, 0, 10, 10};
+					HBRUSH brush = CreateSolidBrush(0x0000FF);
+					FillRect(hdcMemDC, &rc, brush);					
+
+					BYTE* lpPixels = new BYTE[10 * 10 * 4];
+					GetBitmapBits(hBitmap, 10 * 10 * 4, lpPixels);
+
+					std::string json = "";
+					for (size_t y = 0; y < 10; y++) {
+						for (size_t x = 0; x < 10; x++) {
+							size_t index = x + y * 10;
+							json += std::to_string((int)(lpPixels[index])) + ",";
+						}
+					}
+
+					MessageBoxA(hWnd, json.c_str(), "alert", MB_OK);
+
+					BitBlt(hdcWindow, 0, 0, WIDTH, HEIGHT, hdcMemDC, 0, 0,
+						   SRCCOPY);
+
+					DeleteObject(hdcMemDC);
+					ReleaseDC(hWnd, hdcWindow);
+					delete[] lpPixels;
 				} break;
 			}
 			return 0;
