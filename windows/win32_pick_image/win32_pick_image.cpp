@@ -21,6 +21,7 @@
 #define IDM_MENU3 9003
 #define IDM_MENU4 9004
 #define IDM_MENU5 9005
+#define IDM_MENU6 9006
 
 #define WIDTH 256
 #define HEIGHT 256
@@ -186,7 +187,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 
 					RECT rc = {0, 0, 10, 10};
 					HBRUSH brush = CreateSolidBrush(0x0000FF);
-					FillRect(hdcMemDC, &rc, brush);					
+					FillRect(hdcMemDC, &rc, brush);
 
 					BYTE* lpPixels = new BYTE[10 * 10 * 4];
 					GetBitmapBits(hBitmap, 10 * 10 * 4, lpPixels);
@@ -195,7 +196,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 					for (size_t y = 0; y < 10; y++) {
 						for (size_t x = 0; x < 10; x++) {
 							size_t index = x + y * 10;
-							json += std::to_string((int)(lpPixels[index])) + ",";
+							json +=
+								std::to_string((int)(lpPixels[index])) + ",";
 						}
 					}
 
@@ -208,7 +210,47 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 					ReleaseDC(hWnd, hdcWindow);
 					delete[] lpPixels;
 				} break;
+				case IDM_MENU6: {
+					const int width = 256;
+					const int height = 256;
+					uint8_t data[width * height * 4];
+					HINSTANCE hInst = GetModuleHandle(NULL);
+					HWND hWnd = GetActiveWindow();
+					wchar_t szPath[MAX_PATH] = {};
+					OPENFILENAME ofn = {
+						sizeof(ofn)}; // common dialog box structure
+					ofn.hwndOwner = hWnd;
+					ofn.lpstrFilter = L"*.bmp\0";
+					ofn.lpstrFile = szPath;
+					ofn.nMaxFile = ARRAYSIZE(szPath);
+
+					BOOL fOk = GetOpenFileName(&ofn);
+					if (!fOk)
+						break;
+
+					HBITMAP hBitmap = (HBITMAP)LoadImage(
+						hInst, szPath, IMAGE_BITMAP, width, height,
+						LR_LOADFROMFILE); // load image
+
+					BYTE* lpPixels =
+						new BYTE[width * height * 4]; // b,g,r,reserved
+					GetBitmapBits(hBitmap, width * height * 4, lpPixels);
+
+					for (size_t y = 0; y < height; y++) {
+						for (size_t x = 0; x < width; x++) {
+							size_t index = x + y * width;
+							data[index * 4 + 0] = lpPixels[index * 4 + 2];
+							data[index * 4 + 1] = lpPixels[index * 4 + 1];
+							data[index * 4 + 2] = lpPixels[index * 4 + 0];
+							data[index * 4 + 3] = 255;
+						}
+					}
+
+					DeleteObject(hBitmap);
+					delete[] lpPixels;
+				} break;
 			}
+
 			return 0;
 		case WM_DESTROY:
 			PostQuitMessage(0);
