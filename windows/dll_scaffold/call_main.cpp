@@ -3,12 +3,18 @@
 
 #pragma comment(lib, "Kernel32.lib")
 #pragma comment(lib, "user32.lib")
-#pragma comment(lib, "dll_main.lib")
+
+class Car {
+	public:
+		std::string Color;
+		void go();
+};
 
 typedef void (*FN1)();
 typedef void (*FN2)(int);
 typedef int (*FN3)();
 typedef int (*FN4)(int);
+typedef Car* (*FNCreateCar)();
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					 LPSTR pCmdLine, int nCmdShow) {
@@ -29,6 +35,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	fn2(2);
 	std::cout << fn3() << std::endl;
 	std::cout << fn4(4) << std::endl;
+
+	FNCreateCar createCar =
+		(FNCreateCar)GetProcAddress(hLibModule, "createCar");
+	Car* car = createCar();
+	car->go();
+
+	delete car;
 
 	FreeLibrary(hLibModule);
 

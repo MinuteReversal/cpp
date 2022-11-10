@@ -1,6 +1,7 @@
 #include <iostream>
+#include <string>
 #include <windows.h>
-#define DllExport   __declspec( dllexport )
+#define DllExport __declspec(dllexport)
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, // handle to DLL module
 					DWORD fdwReason,    // reason for calling function
@@ -48,3 +49,14 @@ extern "C" DllExport int fn4(int x) {
 	std::cout << "call fn4" << std::endl;
 	return x;
 }
+
+// https://learn.microsoft.com/en-us/cpp/cpp/using-dllimport-and-dllexport-in-cpp-classes?view=msvc-170
+class DllExport Car {
+	public:
+		std::string color = "red";
+		void go() {
+			std::cout << this->color << " car are going." << std::endl;
+		}
+};
+
+extern "C" DllExport Car* createCar() { return new Car(); }
