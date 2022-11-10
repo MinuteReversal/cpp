@@ -37,7 +37,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, // handle to DLL module
 extern "C" DllExport void fn1() { std::cout << "call fn1" << std::endl; }
 
 extern "C" DllExport void fn2(int x) {
-	std::cout << "call fn2" << x << std::endl;
+	std::cout << "call fn2 " << x << std::endl;
 }
 
 extern "C" DllExport int fn3() {
@@ -57,6 +57,29 @@ class DllExport Car {
 		void go() {
 			std::cout << this->color << " car are going." << std::endl;
 		}
+		static void repair(Car car) {
+			std::cout << car.color << " car are in repair factory" << std::endl;
+		}
 };
 
 extern "C" DllExport Car* createCar() { return new Car(); }
+
+struct DllExport Coordinate {
+		double latitude;
+		double longitude;
+};
+
+struct DllExport Place {
+		char* name;
+		struct Coordinate coordinate;
+};
+
+extern "C" struct Coordinate createCoordinate(double latitude,
+											  double longitude) {
+	return {latitude, longitude};
+}
+
+extern "C" struct Place createPlace(char* name, double latitude,
+									double longitude) {
+	return {name, {longitude, latitude}};
+}
