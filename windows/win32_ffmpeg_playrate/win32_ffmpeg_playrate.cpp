@@ -1,11 +1,3 @@
-// https://learn.microsoft.com/zh-tw/windows/win32/learnwin32/your-first-windows-program
-// https://blogs.windows.com/windowsdeveloper/2015/06/05/using-ffmpeg-in-windows-applications/
-// https://github.com/Microsoft/FFmpegInterop
-// https://stackoverflow.com/questions/2401764/can-ffmpeg-be-used-as-a-library-instead-of-a-standalone-program
-// https://trac.ffmpeg.org/wiki/Projects
-// https://github.com/BtbN/FFmpeg-Builds/releases
-// https://www.cnblogs.com/judgeou/p/14724951.html
-// https://blog.csdn.net/tonychan129/article/details/125471964
 #ifndef UNICODE
 #define UNICODE
 #endif

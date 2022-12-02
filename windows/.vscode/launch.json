@@ -37,7 +37,7 @@
       "preLaunchTask": "C/C++: cl.exe build active file ffmpeg"
     },
     {
-      "name": "C/C++: cl.exe build and debug ffmpeg with resource",
+      "name": "C/C++: cl.exe build and debug resource ffmpeg",
       "type": "cppvsdbg",
       "request": "launch",
       "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
@@ -45,7 +45,7 @@
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "internalConsole",
-      "preLaunchTask": "C/C++: cl.exe build active file ffmpeg with resource"
+      "preLaunchTask": "C/C++: cl.exe build active file resource ffmpeg"
     },
     
     {
