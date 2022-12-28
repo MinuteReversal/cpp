@@ -47,7 +47,17 @@
       "console": "internalConsole",
       "preLaunchTask": "C/C++: cl.exe build active file resource ffmpeg"
     },
-    
+    {
+      "name": "C/C++: cl.exe build and debug sdl2",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "console": "internalConsole",
+      "preLaunchTask": "C/C++: cl.exe build active file sdl2"
+    },
     {
       "name": "C/C++: cl.exe build and debug active single file with resource file",
       "type": "cppvsdbg",

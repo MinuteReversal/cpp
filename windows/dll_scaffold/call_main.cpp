@@ -22,7 +22,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	HMODULE hLibModule = LoadLibrary("dll_main.dll");
 
 	if (hLibModule == NULL) {
-		MessageBox(NULL, "沒有找到DLL", "標題", MB_OK);
+		MessageBox(NULL, "沒有找到DLL", "标题", MB_OK);
 		return FALSE;
 	}
 

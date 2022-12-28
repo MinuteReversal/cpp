@@ -70,7 +70,10 @@
   ],
   "C_Cpp.clang_format_style": "file",
   "C_Cpp.clang_format_fallbackStyle": "Visual Studio",
-  "clangd.fallbackFlags": ["-I${env:FFMPEG_HOME}\\include"],
+  "clangd.fallbackFlags": [
+    "-I${env:FFMPEG_HOME}\\include",
+    "-I${env:SDL2}\\include"
+  ],
   "terminal.integrated.env.windows": {
     "PATH": "${env:PATH};C:/flutter/flutter/bin"
   },
