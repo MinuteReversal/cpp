@@ -1,4 +1,6 @@
+#include <basetsd.h>
 #include <iostream>
+#include <string.h>
 #include <string>
 #include <windows.h>
 #define DllExport __declspec(dllexport)
@@ -48,6 +50,26 @@ extern "C" DllExport int fn3() {
 extern "C" DllExport int fn4(int x) {
 	std::cout << "call fn4" << std::endl;
 	return x;
+}
+
+extern "C" DllExport void CreateColorImage(uint8_t* data, char* color,
+										   const int width = 256,
+										   const int height = 256) {
+	std::cout << color << std::endl;
+	/// |0|1|2|3|4|5|6|7|
+	/// |r|g|b|a|r|g|b|a|
+	for (size_t y = 0; y < height; y++) {
+		for (size_t x = 0; x < width; x++) {
+			auto index = x + y * width;
+			*(data + index * 4 + 0) =
+				strcmp(color, "red") == 0 ? 255 : 0; // red
+			*(data + index * 4 + 1) =
+				strcmp(color, "green") == 0 ? 255 : 0; // green
+			*(data + index * 4 + 2) =
+				strcmp(color, "blue") == 0 ? 255 : 0; // blue
+			*(data + index * 4 + 3) = 255;            // alpha
+		}
+	}
 }
 
 // https://learn.microsoft.com/en-us/cpp/cpp/using-dllimport-and-dllexport-in-cpp-classes?view=msvc-170

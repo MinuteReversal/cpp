@@ -1,4 +1,6 @@
 #include <iostream>
+#include <stdint.h>
+#include <string>
 #include <windows.h>
 
 #pragma comment(lib, "Kernel32.lib")
@@ -14,6 +16,7 @@ typedef void (*FN1)();
 typedef void (*FN2)(int);
 typedef int (*FN3)();
 typedef int (*FN4)(int);
+typedef void (*CreateColorImage)(uint8_t*, char*, int, int);
 typedef Car* (*FNCreateCar)();
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -35,6 +38,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	fn2(2);
 	std::cout << fn3() << std::endl;
 	std::cout << fn4(4) << std::endl;
+
+	CreateColorImage fnCreateColorImage =
+		(CreateColorImage)GetProcAddress(hLibModule, "CreateColorImage");
+
+	uint8_t list[256 * 256 * 4];
+	fnCreateColorImage(list, (char*)"red", 256, 256);
+	std::cout << "color:" << (int)list[0] << std::endl;
 
 	FNCreateCar createCar =
 		(FNCreateCar)GetProcAddress(hLibModule, "createCar");
