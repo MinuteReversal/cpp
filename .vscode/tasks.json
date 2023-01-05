@@ -69,7 +69,7 @@
         "/Fe:",
         "${fileDirname}\\${fileBasenameNoExtension}.exe",
         "${file}",
-        "${fileDirname}\\*.cpp" //包含其他头文件依赖的cpp文件
+        // "${fileDirname}\\*.cpp" //包含其他头文件依赖的cpp文件
       ],
       "problemMatcher": ["$msCompile"],
       "group": {

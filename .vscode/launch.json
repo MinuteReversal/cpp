@@ -44,7 +44,7 @@
       "type": "cppvsdbg",
       "request": "launch",
       "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
-      "args": [],
+      "args": ["${file}"],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],

@@ -113,7 +113,7 @@
       "command": "cl.exe",
       "args": [
         "/Zi",
-        "/EHsc",       
+        "/EHsc",
         "/Fe:",
         "${fileDirname}\\${fileBasenameNoExtension}.exe",
         "${file}",
