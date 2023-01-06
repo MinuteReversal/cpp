@@ -117,6 +117,7 @@
         "/Fe:",
         "${fileDirname}\\${fileBasenameNoExtension}.exe",
         "${file}",
+        "${fileDirname}\\*.cpp",
         "shell32.lib",
         "SDL2.lib",
         "SDL2main.lib",
