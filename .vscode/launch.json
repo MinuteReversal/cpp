@@ -50,6 +50,18 @@
       "environment": [],
       "externalConsole": false,
       "preLaunchTask": "C/C++: cl.exe build active file"
+    },
+    {
+      "name": "C/C++: cl.exe build active file with reference",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+      "args": ["${file}"],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "preLaunchTask": "C/C++: cl.exe build active file with reference"
     }
   ]
 }
