@@ -1,66 +1,16 @@
 {
   "editor.tabSize": 2,
-  "files.associations": {
-    "thread": "cpp",
-    "ostream": "cpp",
-    "*.tcc": "cpp",
-    "istream": "cpp",
-    "new": "cpp",
-    "sstream": "cpp",
-    "streambuf": "cpp",
-    "array": "cpp",
-    "functional": "cpp",
-    "random": "cpp",
-    "type_traits": "cpp",
-    "algorithm": "cpp",
-    "memory": "cpp",
-    "unordered_map": "cpp",
-    "map": "cpp",
-    "memory_resource": "cpp",
-    "tuple": "cpp",
-    "utility": "cpp",
-    "cstddef": "cpp",
-    "limits": "cpp",
-    "future": "cpp",
-    "cmath": "cpp",
-    "regex": "cpp",
-    "cctype": "cpp",
-    "clocale": "cpp",
-    "cstdarg": "cpp",
-    "cstdio": "cpp",
-    "cstdlib": "cpp",
-    "cstring": "cpp",
-    "ctime": "cpp",
-    "cwchar": "cpp",
-    "cwctype": "cpp",
-    "exception": "cpp",
-    "fstream": "cpp",
-    "iomanip": "cpp",
-    "iosfwd": "cpp",
-    "iostream": "cpp",
-    "stdexcept": "cpp",
-    "typeinfo": "cpp",
-    "atomic": "cpp",
-    "bitset": "cpp",
-    "chrono": "cpp",
-    "condition_variable": "cpp",
-    "cstdint": "cpp",
-    "deque": "cpp",
-    "list": "cpp",
-    "vector": "cpp",
-    "iterator": "cpp",
-    "numeric": "cpp",
-    "ratio": "cpp",
-    "string": "cpp",
-    "system_error": "cpp",
-    "initializer_list": "cpp",
-    "mutex": "cpp"
+  //https://code.visualstudio.com/docs/terminal/basics#:~:text=Terminal%20profiles%20are%20platform-specific%20shell%20configurations%20comprised%20of,which%20is%20also%20accessible%20via%20the%20terminal%20dropdown.
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+  "terminal.integrated.profiles.windows": {
+    "Command Prompt": {
+      "path": "cmd.exe",
+      "args": [
+        "/k",
+        "C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/Tools/VsDevCmd.bat"
+      ]
+    }
   },
-  "terminal.integrated.shell.windows": "cmd.exe",
-  "terminal.integrated.shellArgs.windows": [
-    "/k",
-    "C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/Tools/VsDevCmd.bat"
-  ],
   "C_Cpp.clang_format_path": "C:\\Users\\zy336\\.vscode\\extensions\\ms-vscode.cpptools-1.11.5-win32-x64\\LLVM\\bin\\clang-format.exe",
   "C_Cpp.default.includePath": [
     "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.33.31629\\"

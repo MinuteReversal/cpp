@@ -60,11 +60,17 @@
     "optional": "cpp",
     "string_view": "cpp"
   },
-  "terminal.integrated.shell.windows": "cmd.exe",
-  "terminal.integrated.shellArgs.windows": [
-    "/k",
-    "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
-  ],
+  //https://code.visualstudio.com/docs/terminal/basics#:~:text=Terminal%20profiles%20are%20platform-specific%20shell%20configurations%20comprised%20of,which%20is%20also%20accessible%20via%20the%20terminal%20dropdown.
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+  "terminal.integrated.profiles.windows": {
+    "Command Prompt": {
+      "path": "cmd.exe",
+      "args": [
+        "/k",
+        "C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/Tools/VsDevCmd.bat"
+      ]
+    }
+  },
   "C_Cpp.default.includePath": [
     "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/"
   ],
@@ -72,7 +78,7 @@
   "C_Cpp.clang_format_fallbackStyle": "Visual Studio",
   "clangd.fallbackFlags": [
     "-I${env:FFMPEG_HOME}\\include",
-    "-I${env:SDL2}\\include"
+    "-I${env:SDL2_DIR}\\include"
   ],
   "terminal.integrated.env.windows": {
     "PATH": "${env:PATH};C:/flutter/flutter/bin"

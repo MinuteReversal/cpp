@@ -69,6 +69,7 @@
         "/Fe:",
         "${fileDirname}\\${fileBasenameNoExtension}.exe",
         "${file}",
+        "/std:c++17"
         // "${fileDirname}\\*.cpp" //包含其他头文件依赖的cpp文件
       ],
       "problemMatcher": ["$msCompile"],
